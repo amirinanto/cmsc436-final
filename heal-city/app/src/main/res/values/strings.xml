@@ -3,4 +3,6 @@
     <string name="title_home">Me</string>
     <string name="title_dashboard">Mission</string>
     <string name="title_notifications">Map</string>
+    <string name="personal">Personal</string>
+    <string name="daily">Daily</string>
 </resources>
