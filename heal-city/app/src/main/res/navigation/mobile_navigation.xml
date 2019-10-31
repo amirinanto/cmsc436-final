@@ -9,13 +9,13 @@
         android:id="@+id/navigation_home"
         android:name="cmsc436.rpg.healcity.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_mission" />
+        tools:layout="@layout/fragment_me" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="cmsc436.rpg.healcity.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_me" />
+        tools:layout="@layout/fragment_missions" />
 
     <fragment
         android:id="@+id/navigation_notifications"
