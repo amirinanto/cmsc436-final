@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_me">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="cmsc436.rpg.healcity.ui.home.HomeFragment"
+        android:id="@+id/navigation_me"
+        android:name="cmsc436.rpg.healcity.ui.me.MeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_me" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="cmsc436.rpg.healcity.ui.dashboard.DashboardFragment"
+        android:id="@+id/navigation_mission"
+        android:name="cmsc436.rpg.healcity.ui.missions.MissionFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_missions" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="cmsc436.rpg.healcity.ui.notifications.NotificationsFragment"
+        android:id="@+id/navigation_map"
+        android:name="cmsc436.rpg.healcity.ui.map.MapFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_map" />
 </navigation>
