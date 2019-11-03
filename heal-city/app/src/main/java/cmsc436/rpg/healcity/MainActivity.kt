@@ -27,4 +27,8 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
+
+    companion object {
+        const val PREF_FILE = "heal_city_pref"
+    }
 }

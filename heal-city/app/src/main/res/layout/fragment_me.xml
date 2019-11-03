@@ -22,7 +22,9 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_android_black_24dp" />
 
 
         </androidx.cardview.widget.CardView>
