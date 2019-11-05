@@ -111,7 +111,6 @@ class MeFragment : Fragment() {
     }
 
     private fun reloadEquipColor() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun isEquipSaved(sharedPref: SharedPreferences?): Boolean {
