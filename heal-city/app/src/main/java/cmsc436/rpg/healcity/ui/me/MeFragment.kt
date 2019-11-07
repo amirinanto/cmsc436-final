@@ -38,10 +38,11 @@ class MeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?): View? {
+
         homeViewModel =
             ViewModelProviders.of(this).get(MeViewModel::class.java)
+
         return inflater.inflate(R.layout.fragment_me, container, false)
     }
 
@@ -129,7 +130,6 @@ class MeFragment : Fragment() {
 
     companion object {
         private const val TAG = "ME_FRAGMENT"
-
         private const val HEAD_KEY = "HEAD_ITEM"
         private const val BODY_KEY = "BODY_ITEM"
         private const val HAND_KEY = "HAND_ITEM"
@@ -137,7 +137,6 @@ class MeFragment : Fragment() {
         private const val PANTS_KEY = "PANTS_ITEM"
         private const val FEET_KEY = "FEET_ITEM"
     }
-
 }
 
 interface onEquipSelected {
