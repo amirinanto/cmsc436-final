@@ -8,18 +8,15 @@
     <fragment
         android:id="@+id/navigation_me"
         android:name="cmsc436.rpg.healcity.ui.me.MeFragment"
-        android:label="@string/title_home"
         tools:layout="@layout/fragment_me" />
 
     <fragment
         android:id="@+id/navigation_mission"
         android:name="cmsc436.rpg.healcity.ui.missions.MissionFragment"
-        android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_missions" />
 
     <fragment
         android:id="@+id/navigation_map"
         android:name="cmsc436.rpg.healcity.ui.map.MapFragment"
-        android:label="@string/title_notifications"
         tools:layout="@layout/fragment_map" />
 </navigation>
