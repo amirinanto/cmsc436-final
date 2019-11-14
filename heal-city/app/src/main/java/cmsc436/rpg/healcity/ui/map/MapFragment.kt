@@ -73,14 +73,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        nearbyPlacesList = ArrayList<NearbyPlaces>().apply {
-            add(NearbyPlaces("a", 1.toDouble(), 2.toDouble()))
-            add(NearbyPlaces("b", 2.toDouble(), 3.toDouble()))
-        }
+        nearbyPlacesList = ArrayList<NearbyPlaces>()
 
         adapter = NearbyPlacesAdapter(nearbyPlacesList)
         listview_nearby.layoutManager = LinearLayoutManager(context!!)
         listview_nearby.adapter = adapter
+
+        
 
     }
 
