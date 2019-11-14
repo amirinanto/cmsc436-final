@@ -49,5 +49,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG = "HEAL-CITY"
         const val PREF_FILE = "heal_city_pref"
+        const val DB_FILE = "heal_city_db"
     }
+
 }

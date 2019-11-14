@@ -17,6 +17,10 @@ class NearbyPlacesAdapter(val items : List<NearbyPlaces>) : RecyclerView.Adapter
         holder.longitude.text = items[position].lng.toString()
     }
 
+    fun refresh() {
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int = items.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
