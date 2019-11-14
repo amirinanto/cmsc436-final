@@ -138,14 +138,17 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
             //default
             var lat = "0"
             var lng = "0"
+            var time = System.currentTimeMillis()
 
             if (lastLocation != null) {
                 lat = lastLocation!!.latitude.toString()
                 lng = lastLocation!!.longitude.toString()
+                time = lastLocation!!.time
             }
 
             putString(LAT_KEY, lat)
             putString(LNG_KEY, lng)
+            putLong(TIME_KEY, time)
 
             commit()
 
@@ -216,5 +219,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
         private const val LAT_KEY = "USER_LAT"
         private const val LNG_KEY = "USER_LNG"
+        private const val TIME_KEY = "USER_TIME"
     }
 }
