@@ -1,16 +1,15 @@
 package cmsc436.rpg.healcity.ui.missions
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ListAdapter
-import android.widget.ListView
-import android.widget.SimpleAdapter
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import cmsc436.rpg.healcity.R
+import com.google.android.gms.location.FusedLocationProviderClient
 
 
 class MissionFragment : Fragment() {
@@ -21,6 +20,8 @@ class MissionFragment : Fragment() {
     private lateinit var mListAdapter: ListAdapter
 
     var missions = ArrayList<Mission>()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var lastLocation: Location
 
     private val missionTitles = arrayOf("Walking Goal", "Check-In Goal")
     private val missionDesc = arrayOf("Walk 1 mile", "Check-In at 1 location")
@@ -36,9 +37,12 @@ class MissionFragment : Fragment() {
 
         val aList = ArrayList<HashMap<String, String>>()
 
+        val button = root.findViewById(R.id.AddNewMissionButton) as Button
+        button.setOnClickListener{ view ->
+            AddNewMission(view)
+        }
 
-
-        for (i in 0..1) {
+        for (i in missionTitles.indices) {
             val hm = HashMap<String, String>()
             hm["listview_title"] = missionTitles[i]
             hm["listview_discription"] = missionDesc[i]
@@ -64,38 +68,12 @@ class MissionFragment : Fragment() {
         // Don't destroy Fragment on reconfiguration
         retainInstance = true
 
+
     }
 
-
-
-
-//    class MissionListAdapter(context: Context, private var missions: List<Mission>) :
-//        SimpleAdapter<Mission>(context, R.layout.mission, missions) {
-//
-//        private lateinit var missionView: View
-//
-//        @SuppressLint("ViewHolder")
-//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-//            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//
-//            missionView = inflater.inflate(R.layout.mission, parent.findViewById(R.id.mission_layout), false)
-//
-//            val missionName = missionView.findViewById<TextView>(R.id.mission_title)
-//            //val missionDesc = missionView.findViewById<TextView>(R.id.mission_description)
-//
-//            val mission = missions[position]
-//            missionName.text = mission.missionName
-//            //missionDesc.text = mission.missionDesc
-//            Log.i("MISSION 12345", missionName.text.toString() + " ") //missionDesc.text.toString())
-//
-//            return missionView
-//        }
-//
-//        override fun getCount() = 2
-//        override fun getItem(position: Int) = missions[position]
-//        override fun getItemId(position: Int) = position.toLong()
-//
-//    }
+    fun AddNewMission(v : View) {
+        Toast.makeText(context!!, "You clicked the button", Toast.LENGTH_SHORT).show()
+    }
 
 
 }

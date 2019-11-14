@@ -5,4 +5,5 @@
     <string name="title_notifications">Map</string>
     <string name="personal">Personal</string>
     <string name="daily">Daily</string>
+    <string name="add_mission">Add A New Personal Mission</string>
 </resources>
