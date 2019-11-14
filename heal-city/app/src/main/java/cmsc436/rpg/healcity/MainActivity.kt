@@ -7,6 +7,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,9 +26,25 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
+        checkGooglePlayServices()
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
+
+    private fun checkGooglePlayServices(): Boolean {
+        val googleAPI = GoogleApiAvailability.getInstance();
+        val result = googleAPI.isGooglePlayServicesAvailable(this);
+        if(result != ConnectionResult.SUCCESS) {
+            if(googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result,
+                    0).show();
+            }
+            return false;
+        }
+        return true;
+    }
+
 
     companion object {
         const val TAG = "HEAL-CITY"
