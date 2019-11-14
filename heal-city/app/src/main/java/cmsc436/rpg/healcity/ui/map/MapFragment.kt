@@ -147,6 +147,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
             putString(LAT_KEY, lat)
             putString(LNG_KEY, lng)
 
+            commit()
+
         }
     }
 
