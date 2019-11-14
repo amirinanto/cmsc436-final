@@ -79,7 +79,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         listview_nearby.layoutManager = LinearLayoutManager(context!!)
         listview_nearby.adapter = adapter
 
-        
+
 
     }
 
@@ -98,12 +98,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         //request permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(context!!,
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient()
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity!!,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+                return
             }
-        } else {
-            buildGoogleApiClient()
         }
+
+        buildGoogleApiClient()
 
         //show button on top right to move to current location
         map.isMyLocationEnabled = true
