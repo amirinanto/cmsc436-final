@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +27,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -43,6 +45,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.security.Permission
 import kotlin.random.Random
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, LocationListener{
@@ -60,11 +63,15 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
     private lateinit var placesClient: PlacesClient
 
+    private var googleApiClient: GoogleApiClient? = null
 
     private var zoomLevel: Float = 18.0f
 
     private var nearbyPlacesList = ArrayList<NearbyPlaces>()
     private lateinit var adapter: NearbyPlacesAdapter
+
+    private lateinit var warningText: TextView
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         notificationsViewModel =
@@ -79,9 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         //location api
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
 
-        root.findViewById<Button>(R.id.add_place).setOnClickListener {
-            addPlace(it)
-        }
+        warningText = root.findViewById(R.id.map_warning)
 
         return root
     }
@@ -107,15 +112,22 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
         lastMarker = map.addMarker(MarkerOptions().position(LatLng(0.toDouble(),0.toDouble())))
 
-        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(activity!!,  R.raw.night_map))
-        map.uiSettings.setAllGesturesEnabled(false)
-        map.setOnMarkerClickListener(this)
+        //seting up map
+        map.apply {
+            setMapStyle(MapStyleOptions.loadRawResourceStyle(activity!!,  R.raw.night_map))
+            uiSettings.setAllGesturesEnabled(false)
+            setOnMarkerClickListener(this@MapFragment)
+        }
 
         //request permission
         setUpPermission()
 
-        buildGoogleApiClient()
-
+        if (ActivityCompat.checkSelfPermission(context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            noLocationProvided()
+            return
+        }
 
         //show button on top right to move to current location
         map.isMyLocationEnabled = true
@@ -123,22 +135,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         //when fusedLocationClient success on getting location
         fusedLocationClient.lastLocation.addOnSuccessListener {
                 location ->
-            if (location != null) {
-                Log.i(MainActivity.TAG, "location, lat: ${location.latitude} long: ${location.longitude}")
-
-                lastLocation = location
-
-                saveLocation()
-
-                val curLatLng = LatLng(location.latitude, location.longitude)
-
-                updateUserMarker(curLatLng)
-
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, zoomLevel))
-            } else {
-                Log.i(MainActivity.TAG, "NULL LOCATION")
-            }
+            requestLocation(location)
+        }.addOnFailureListener {
+            Log.e(MainActivity.TAG, "fusedLocationClient fail to get location")
         }
+    }
+
+    private fun noLocationProvided() {
+        warningText.visibility = View.VISIBLE
     }
 
     private fun setUpPermission() {
@@ -161,8 +165,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
                     LOCATION_PERMISSION_REQUEST_CODE)
 
             }
-        } else {
-            // Permission has already been granted
         }
     }
 
@@ -191,19 +193,28 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         }
     }
 
-    private fun buildGoogleApiClient() {
+    private fun requestLocation(location: Location?) {
+        if (location != null) {
+            Log.i(MainActivity.TAG, "location, lat: ${location.latitude} long: ${location.longitude}")
 
+            lastLocation = location
+
+            saveLocation()
+
+            val curLatLng = LatLng(location.latitude, location.longitude)
+
+            updateUserMarker(curLatLng)
+
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, zoomLevel))
+        } else {
+            Log.i(MainActivity.TAG, "NULL LOCATION")
+        }
     }
 
     private fun updateUserMarker(location: LatLng) {
         if (lastMarker != null) lastMarker?.remove()
         else lastMarker = map.addMarker(MarkerOptions().position(location))
 
-    }
-
-    private fun addPlaceMarker(location: LatLng) {
-        val nearbyPlaces = NearbyPlaces("", 0.toDouble(), 0.toDouble())
-        nearbyPlacesList.add(nearbyPlaces)
     }
 
     private fun populateNearby() {
@@ -232,56 +243,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         } else {
             // A local method to request required permissions;
             // See https://developer.android.com/training/permissions/requesting
+            setUpPermission()
+
         }
-
-
-        /*
-        if (lastLocation != null) {
-            val googleUrl =
-                StringBuilder("https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Restaurant&inputtype=textquery&key=")
-                    .append(resources.getString(R.string.google_maps_key))
-                    .append("&locationbias=circle:300@")
-                    .append(lastLocation!!.latitude)
-                    .append(",")
-                    .append(lastLocation!!.longitude)
-                    .append("&fields=place_id,name,geometry,types")
-                    .toString()
-
-            val request = object: StringRequest(Method.GET, googleUrl, Response.Listener <String> {
-                    response ->
-
-                val jsonResponse = JSONObject(response)
-
-                Log.i(MainActivity.TAG, "JSONRESPONSE" + jsonResponse.toString())
-
-            }, Response.ErrorListener {
-                    _ ->
-                Log.e(MainActivity.TAG, "ERROR POPULATE")
-                nearbyPlacesList.clear()
-                addNearbyPlace(NearbyPlaces("Error Finding places nearby, check your internet", ZERO, ZERO))
-
-            }){}
-
-            Volley.newRequestQueue(context!!).add(request)
-        }
-
-        */
-
-
-
 
     }
 
     override fun onLocationChanged(location: Location?) {
-        if (location != null) {
-            Log.i(MainActivity.TAG, "location, lat: ${location.latitude} long: ${location.longitude}")
-            lastLocation = location
-            val curLatLng = LatLng(location.latitude, location.longitude)
-            updateUserMarker(curLatLng)
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, zoomLevel))
-        } else {
-            Log.i(MainActivity.TAG, "NULL LOCATION")
-        }
+        requestLocation(location)
     }
 
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
@@ -299,13 +268,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
     }
 
-    fun addPlace(view: View) {
-        populateNearby()
-        val name = "Place " + Random.nextInt(0,10)
-        addNearbyPlace(NearbyPlaces(name, 0.toDouble(), 0.toDouble()))
-    }
-
     fun addNearbyPlace(nearbyPlace: NearbyPlaces) {
+        if (nearbyPlacesList.size > 9) return
         nearbyPlacesList.add(nearbyPlace)
         adapter.refresh()
         Log.d(MainActivity.TAG, nearbyPlace.name + " added, list: " + nearbyPlacesList)

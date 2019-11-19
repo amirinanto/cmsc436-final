@@ -25,7 +25,7 @@ class NearbyPlacesAdapter(val items : List<NearbyPlaces>) : RecyclerView.Adapter
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val placeName = itemView.placeName
-        val latitude = itemView.latittude
-        val longitude = itemView.longitude
+        val latitude = itemView.place_distance
+        val longitude = itemView.place_reward
     }
 }

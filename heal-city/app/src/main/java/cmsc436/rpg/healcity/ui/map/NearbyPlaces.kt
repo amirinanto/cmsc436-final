@@ -6,6 +6,7 @@ import java.util.*
 data class NearbyPlaces (var name: String,
                          var lat: Double,
                          var lng: Double,
+                         var distance: Float = -1f,
                          var id: Int = -1,
                          var reward_exp: Int = 0,
                          var checked: Boolean = false,
