@@ -6,4 +6,9 @@
     <string name="personal">Personal</string>
     <string name="daily">Daily</string>
     <string name="add_mission">Add A New Personal Mission</string>
+
+    <string name="current_step">Current Steps:</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="resume">Resume</string>
 </resources>

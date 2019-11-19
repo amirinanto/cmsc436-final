@@ -14,12 +14,12 @@
             app:layout_constraintHeight_percent=".4"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_margin="@dimen/card_margin">
+            android:layout_margin="@dimen/big_gap">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/card_padding">
+                android:padding="@dimen/medium_gap">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -85,13 +85,13 @@
             app:layout_constraintHeight_percent=".4"
             app:layout_constraintTop_toBottomOf="@id/identity_card"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_margin="@dimen/card_margin">
+            android:layout_margin="@dimen/big_gap">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="16dp"
-                android:padding="@dimen/card_padding">
+                android:padding="@dimen/medium_gap">
 
                 <TextView
                     android:id="@+id/textView"

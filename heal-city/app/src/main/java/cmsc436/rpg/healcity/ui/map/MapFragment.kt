@@ -116,7 +116,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         map.apply {
             setMapStyle(MapStyleOptions.loadRawResourceStyle(activity!!,  R.raw.night_map))
             uiSettings.setAllGesturesEnabled(false)
-            setOnMarkerClickListener(this@MapFragment)
         }
 
         //request permission
@@ -136,6 +135,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         fusedLocationClient.lastLocation.addOnSuccessListener {
                 location ->
             requestLocation(location)
+            populateNearby()
         }.addOnFailureListener {
             Log.e(MainActivity.TAG, "fusedLocationClient fail to get location")
         }
@@ -171,8 +171,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
     private fun saveLocation() {
         val pref =  activity!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        with (editor) {
+        with (pref.edit()) {
             //default
             var lat = "0"
             var lng = "0"
