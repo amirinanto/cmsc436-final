@@ -2,6 +2,8 @@ package cmsc436.rpg.healcity.ui.map
 
 import NearbyPlacesAdapter
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -279,7 +281,15 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val place = result.place
                         val lat = place.latLng?.latitude
                         val lng = place.latLng?.longitude
-                        addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!))
+                        val id = place.id?.toInt()
+                        addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
+                    }
+
+                    if (nearbyPlacesList.isEmpty()) {
+                        loading_progress.visibility = View.GONE
+                        loading_text.text = resources.getString(R.string.no_nearby)
+                    } else {
+                        loading_card.visibility = View.GONE
                     }
                 }.addOnFailureListener {
                     if (it is ApiException) {

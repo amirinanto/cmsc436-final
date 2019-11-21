@@ -24,7 +24,7 @@ class NearbyPlacesAdapter(val items : List<NearbyPlace>) : RecyclerView.Adapter<
     override fun getItemCount(): Int = items.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val placeName = itemView.placeName
+        val placeName = itemView.place_name_info
         val latitude = itemView.place_distance
         val longitude = itemView.place_reward
     }

@@ -14,4 +14,8 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="enter_a_title">Enter a title...</string>
+
+    <string name="no_location_permission">No Location Provided, this tab will not work :(</string>
+    <string name="loading_locations">Loading Nearby Places..</string>
+    <string name="no_nearby">No nearby places found.\nCheck your connection and location.</string>
 </resources>
