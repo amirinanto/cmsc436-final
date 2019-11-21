@@ -3,14 +3,14 @@ package cmsc436.rpg.healcity.ui.map
 import android.location.Location
 import java.util.*
 
-data class NearbyPlaces (var name: String,
-                         var lat: Double,
-                         var lng: Double,
-                         var distance: Float = -1f,
-                         var id: Int = -1,
-                         var reward_exp: Int = 0,
-                         var checked: Boolean = false,
-                         var checkInDate: Date = Date(0)) {
+data class NearbyPlace (var name: String,
+                        var lat: Double,
+                        var lng: Double,
+                        var distance: Float = -1f,
+                        var id: Int = -1,
+                        var reward_exp: Int = 0,
+                        var checked: Boolean = false,
+                        var checkInDate: Date = Date(0)) {
 
     fun getDistance(from_lat: Double, from_long: Double) : Float {
         with(floatArrayOf()) {

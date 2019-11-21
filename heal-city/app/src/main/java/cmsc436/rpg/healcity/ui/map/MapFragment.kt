@@ -2,34 +2,24 @@ package cmsc436.rpg.healcity.ui.map
 
 import NearbyPlacesAdapter
 import android.Manifest
-import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
-import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import cmsc436.rpg.healcity.MainActivity
 import cmsc436.rpg.healcity.R
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -43,18 +33,15 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.android.synthetic.main.fragment_map.*
-import org.json.JSONArray
-import org.json.JSONObject
-import java.security.Permission
-import kotlin.random.Random
 
-class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, LocationListener{
+class MapFragment : Fragment(), OnMapReadyCallback{
 
 
     private lateinit var notificationsViewModel: MapViewModel
     private lateinit var googleMap: SupportMapFragment
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
 
     private var lastLocation: Location? = null
     private var lastMarker: Marker? = null
@@ -63,11 +50,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
     private lateinit var placesClient: PlacesClient
 
-    private var googleApiClient: GoogleApiClient? = null
-
     private var zoomLevel: Float = 18.0f
 
-    private var nearbyPlacesList = ArrayList<NearbyPlaces>()
+    private var nearbyPlacesList = ArrayList<NearbyPlace>()
     private lateinit var adapter: NearbyPlacesAdapter
 
     private lateinit var warningText: TextView
@@ -86,15 +71,30 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         //location api
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
 
+        //location callback
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    updateLocation(location)
+                }
+            }
+        }
+
         warningText = root.findViewById(R.id.map_warning)
 
         return root
     }
 
+    /**
+     * Setting up nearby places list and API Client
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        nearbyPlacesList = ArrayList<NearbyPlaces>()
+        nearbyPlacesList = ArrayList<NearbyPlace>()
 
         adapter = NearbyPlacesAdapter(nearbyPlacesList)
         listview_nearby.layoutManager = LinearLayoutManager(context!!)
@@ -104,9 +104,34 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         placesClient = Places.createClient(context!!)
     }
 
+    /**
+     * Start location update listener when app is resumed
+     * TODO
+     *
+     * @author Muchlas Amirinanto
+     */
+    override fun onResume() {
+        super.onResume()
+        val locationRequest = LocationRequest()
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+    }
 
-    override fun onMarkerClick(p0: Marker?): Boolean = false
+    /**
+     * Stop location update listener when app is paused
+     *
+     * @author Muchlas Amirinanto
+     */
+    override fun onPause() {
+        super.onPause()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
 
+    /**
+     * This function handle the initial map operation, including setting up map
+     * and location update listener
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onMapReady(gMap: GoogleMap) {
         map = gMap
 
@@ -114,6 +139,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
         //seting up map
         map.apply {
+            map.isMyLocationEnabled = true
             setMapStyle(MapStyleOptions.loadRawResourceStyle(activity!!,  R.raw.night_map))
             uiSettings.setAllGesturesEnabled(false)
         }
@@ -128,23 +154,33 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
             return
         }
 
-        //show button on top right to move to current location
-        map.isMyLocationEnabled = true
 
         //when fusedLocationClient success on getting location
         fusedLocationClient.lastLocation.addOnSuccessListener {
                 location ->
-            requestLocation(location)
+            updateLocation(location)
             populateNearby()
         }.addOnFailureListener {
             Log.e(MainActivity.TAG, "fusedLocationClient fail to get location")
         }
     }
 
+    /**
+     * This function will show error message and disable location-permission-dependent functions
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun noLocationProvided() {
         warningText.visibility = View.VISIBLE
     }
 
+    /**
+     * Requesting location permission for the app
+     * Should only be in the beginning ???
+     * TODO
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun setUpPermission() {
         // Here, thisActivity is the current activity
         if (ActivityCompat.checkSelfPermission(context!!,
@@ -169,6 +205,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
     }
 
 
+    /**
+     * Saves last known user location into sharedPreference
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun saveLocation() {
         val pref =  activity!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
         with (pref.edit()) {
@@ -192,7 +233,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         }
     }
 
-    private fun requestLocation(location: Location?) {
+    /**
+     * This function will update user's location marker on the map and save the location
+     *
+     * @author Muchlas Amirinanto
+     * @param location -> new user's location
+     */
+    private fun updateLocation(location: Location?) {
         if (location != null) {
             Log.i(MainActivity.TAG, "location, lat: ${location.latitude} long: ${location.longitude}")
 
@@ -202,73 +249,64 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
             val curLatLng = LatLng(location.latitude, location.longitude)
 
-            updateUserMarker(curLatLng)
-
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, zoomLevel))
         } else {
             Log.i(MainActivity.TAG, "NULL LOCATION")
         }
     }
 
-    private fun updateUserMarker(location: LatLng) {
-        if (lastMarker != null) lastMarker?.remove()
-        else lastMarker = map.addMarker(MarkerOptions().position(location))
-
-    }
-
+    /**
+     * This function will fetch information of places nearby the user's current location using
+     * Google's Places API
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun populateNearby() {
         // Use fields to define the data types to return.
-        var placeFields = listOf(Place.Field.NAME, Place.Field.LAT_LNG )
+        var placeFields = listOf(Place.Field.NAME, Place.Field.ID, Place.Field.LAT_LNG )
 
         // Use the builder to create a FindCurrentPlaceRequest.
         var request = FindCurrentPlaceRequest.builder(placeFields).build()
+
         // Call findCurrentPlace and handle the response (first check that the user has granted permission).
         if (ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            placesClient.findCurrentPlace(request).addOnSuccessListener {
-                for (result in it.placeLikelihoods) {
-                    Log.i(MainActivity.TAG, "name: ${result.place.name}, likelihood: ${result.place}")
 
-                    val place = result.place
-                    val lat = place.latLng?.latitude
-                    val lng = place.latLng?.longitude
-                    addNearbyPlace(NearbyPlaces(place.name!!, lat!!, lng!!))
+            placesClient.findCurrentPlace(request)
+                .addOnSuccessListener {
+                    for (result in it.placeLikelihoods) {
+                        Log.i(MainActivity.TAG, "name: ${result.place.name}, likelihood: ${result.place}")
+
+                        val place = result.place
+                        val lat = place.latLng?.latitude
+                        val lng = place.latLng?.longitude
+                        addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!))
+                    }
+                }.addOnFailureListener {
+                    if (it is ApiException) {
+                        Log.e(MainActivity.TAG, "not found: ${it}")
+                    }
                 }
-            }.addOnFailureListener {
-                if (it is ApiException) {
-                    Log.e(MainActivity.TAG, "not found: ${it}")
-                }
-            }
 
         } else {
             // A local method to request required permissions;
-            // See https://developer.android.com/training/permissions/requesting
             setUpPermission()
 
         }
 
     }
 
-    override fun onLocationChanged(location: Location?) {
-        requestLocation(location)
-    }
-
-    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-    }
-
-    override fun onProviderEnabled(p0: String?) {
-
-    }
-
-    override fun onProviderDisabled(p0: String?) {
-
-    }
-
-    private fun getPlaces() {
-
-    }
-
-    fun addNearbyPlace(nearbyPlace: NearbyPlaces) {
-        if (nearbyPlacesList.size > 9) return
+    /**
+     * This function will add a NearbyPlace object to the nearby places list
+     * and update the refresher.
+     *
+     * Note:
+     * We limit the number of Nearby Place to be shown to 10 to avoid long list
+     *
+     * @author Muchlas Amirinanto
+     * @param nearbyPlace -> a NearbyPlace object with to be added to the list
+     */
+    fun addNearbyPlace(nearbyPlace: NearbyPlace) {
+        if (nearbyPlacesList.size >= 10) return
         nearbyPlacesList.add(nearbyPlace)
         adapter.refresh()
         Log.d(MainActivity.TAG, nearbyPlace.name + " added, list: " + nearbyPlacesList)
