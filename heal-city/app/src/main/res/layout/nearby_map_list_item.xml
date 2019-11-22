@@ -46,6 +46,19 @@
         app:layout_constraintStart_toEndOf="@+id/place_distance"
         app:layout_constraintTop_toBottomOf="@+id/place_name_info" />
 
+    <ImageButton
+        android:id="@+id/imageButton"
+        style="@android:style/Widget.Material.ImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:cropToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/checkBox"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_directions" />
+
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
@@ -66,18 +79,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/place_distance" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        style="@android:style/Widget.Material.ImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:cropToPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/checkBox"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_directions" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

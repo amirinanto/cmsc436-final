@@ -2,8 +2,6 @@ package cmsc436.rpg.healcity.ui.map
 
 import NearbyPlacesAdapter
 import android.Manifest
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -13,7 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -28,8 +25,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
@@ -46,19 +41,12 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     private lateinit var locationCallback: LocationCallback
 
     private var lastLocation: Location? = null
-    private var lastMarker: Marker? = null
 
     private lateinit var map: GoogleMap
-
     private lateinit var placesClient: PlacesClient
-
-    private var zoomLevel: Float = 18.0f
 
     private var nearbyPlacesList = ArrayList<NearbyPlace>()
     private lateinit var adapter: NearbyPlacesAdapter
-
-    private lateinit var warningText: TextView
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         notificationsViewModel =
@@ -82,8 +70,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                 }
             }
         }
-
-        warningText = root.findViewById(R.id.map_warning)
 
         return root
     }
@@ -137,8 +123,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     override fun onMapReady(gMap: GoogleMap) {
         map = gMap
 
-        lastMarker = map.addMarker(MarkerOptions().position(LatLng(0.toDouble(),0.toDouble())))
-
         //seting up map
         map.apply {
             map.isMyLocationEnabled = true
@@ -146,7 +130,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             uiSettings.setAllGesturesEnabled(false)
         }
 
-        //request permission
+        loading_map.visibility = View.GONE
+
+        //request permission TODO
         setUpPermission()
 
         if (ActivityCompat.checkSelfPermission(context!!,
@@ -173,7 +159,8 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      * @author Muchlas Amirinanto
      */
     private fun noLocationProvided() {
-        warningText.visibility = View.VISIBLE
+        map_warning.visibility = View.VISIBLE
+        map_card.visibility = View.GONE
     }
 
     /**
@@ -329,6 +316,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         private const val LNG_KEY = "USER_LNG"
         private const val TIME_KEY = "USER_TIME"
 
-        private const val ZERO = 0.toDouble()
+        private const val zoomLevel = 18.0f
     }
 }
