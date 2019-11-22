@@ -88,7 +88,7 @@
                 android:id="@+id/loading_card"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <TextView
                     android:id="@+id/loading_text"
@@ -117,13 +117,23 @@
 
             <TextView
                 android:id="@+id/map_warning"
-                style="@style/TextAppearance.MaterialComponents.Headline4"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/no_location_permission"
                 android:textAlignment="center"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/no_nearby_warning"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/no_nearby"
+                android:textAlignment="center"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/nearby_headline"

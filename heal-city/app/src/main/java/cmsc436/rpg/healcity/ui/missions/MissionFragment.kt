@@ -110,6 +110,7 @@ class MissionFragment : Fragment() {
                 steps = data?.getStringExtra(MainActivity.STEP_KEY)!!.toInt()
             }
 
+
         }
     }
 

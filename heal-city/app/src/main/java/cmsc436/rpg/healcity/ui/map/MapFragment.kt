@@ -252,7 +252,10 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      */
     private fun populateNearby() {
         // Use fields to define the data types to return.
-        var placeFields = listOf(Place.Field.NAME, Place.Field.ID, Place.Field.LAT_LNG )
+        var placeFields = listOf(Place.Field.NAME,
+            Place.Field.ID,
+            Place.Field.LAT_LNG,
+            Place.Field.TYPES)
 
         // Use the builder to create a FindCurrentPlaceRequest.
         var request = FindCurrentPlaceRequest.builder(placeFields).build()
@@ -269,19 +272,19 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val lat = place.latLng?.latitude
                         val lng = place.latLng?.longitude
                         val id = place.id?.toInt()
-                        addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
+                        val type = place.types
+                        if (type == Place.Type.PARK) addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
                     }
 
+                    loading_card.visibility = View.GONE
+
                     if (nearbyPlacesList.isEmpty()) {
-                        loading_progress.visibility = View.GONE
-                        loading_text.text = resources.getString(R.string.no_nearby)
-                    } else {
-                        loading_card.visibility = View.GONE
+                        noNearbyPlaces()
                     }
                 }.addOnFailureListener {
-                    if (it is ApiException) {
-                        Log.e(MainActivity.TAG, "not found: ${it}")
-                    }
+                    loading_card.visibility = View.GONE
+                    noNearbyPlaces()
+                    Log.e(MainActivity.TAG, "not found: ${it}")
                 }
 
         } else {
@@ -290,6 +293,10 @@ class MapFragment : Fragment(), OnMapReadyCallback{
 
         }
 
+    }
+
+    private fun noNearbyPlaces() {
+        no_nearby_warning.visibility = View.VISIBLE
     }
 
     /**
