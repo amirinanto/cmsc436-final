@@ -114,3 +114,7 @@ class MeFragment : Fragment() {
 interface onEquipSelected {
     fun onEquipSelected(meViewModel: MeViewModel)
 }
+
+=======
+}
+>>>>>>> e98e9276ab58d57687b0e32aba1bef238cfec9cf

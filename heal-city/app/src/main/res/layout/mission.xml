@@ -6,13 +6,6 @@
     android:orientation="horizontal"
     android:padding="7dp">
 
-    <ImageView
-        android:id="@+id/mission_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/app_name"
-        android:padding="10dp" />
-
     <LinearLayout
         android:id="@+id/mission_layout"
         android:layout_width="wrap_content"
@@ -34,4 +27,12 @@
             android:paddingTop="5dp"
             android:textSize="12sp" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mission_progress"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="end"/>
 </LinearLayout>

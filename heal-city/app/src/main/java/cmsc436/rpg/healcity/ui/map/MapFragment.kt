@@ -4,52 +4,48 @@ import NearbyPlacesAdapter
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.location.Location
-import android.location.LocationListener
-import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import cmsc436.rpg.healcity.MainActivity
 import cmsc436.rpg.healcity.R
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import kotlinx.android.extensions.LayoutContainer
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.android.synthetic.main.fragment_map.*
-import kotlinx.android.synthetic.main.nearby_map_list_item.view.*
 
-class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, LocationListener{
+class MapFragment : Fragment(), OnMapReadyCallback{
 
 
     private lateinit var notificationsViewModel: MapViewModel
     private lateinit var googleMap: SupportMapFragment
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
+
     private var lastLocation: Location? = null
-    private var lastMarker: Marker? = null
 
     private lateinit var map: GoogleMap
+    private lateinit var placesClient: PlacesClient
 
-    private var zoomLevel: Float = 18.0f
-
-    private var nearbyPlacesList = ArrayList<NearbyPlaces>()
+    private var nearbyPlacesList = ArrayList<NearbyPlace>()
     private lateinit var adapter: NearbyPlacesAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,76 +61,147 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         //location api
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
 
-        populateNearby()
+        //location callback
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    updateLocation(location)
+                }
+            }
+        }
 
         return root
     }
 
+    /**
+     * Setting up nearby places list and API Client
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        nearbyPlacesList = ArrayList<NearbyPlaces>()
+        nearbyPlacesList = ArrayList<NearbyPlace>()
 
         adapter = NearbyPlacesAdapter(nearbyPlacesList)
         listview_nearby.layoutManager = LinearLayoutManager(context!!)
         listview_nearby.adapter = adapter
 
-
-
+        Places.initialize(context!!, resources.getString(R.string.google_maps_key))
+        placesClient = Places.createClient(context!!)
     }
 
+    /**
+     * Start location update listener when app is resumed
+     * TODO
+     *
+     * @author Muchlas Amirinanto
+     */
+    override fun onResume() {
+        super.onResume()
+        val locationRequest = LocationRequest()
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+    }
 
-    override fun onMarkerClick(p0: Marker?): Boolean = false
+    /**
+     * Stop location update listener when app is paused
+     *
+     * @author Muchlas Amirinanto
+     */
+    override fun onPause() {
+        super.onPause()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
 
+    /**
+     * This function handle the initial map operation, including setting up map
+     * and location update listener
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onMapReady(gMap: GoogleMap) {
         map = gMap
 
-        lastMarker = map.addMarker(MarkerOptions().position(LatLng(0.toDouble(),0.toDouble())))
-
-        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(activity!!,  R.raw.night_map))
-        map.uiSettings.setAllGesturesEnabled(false)
-        map.setOnMarkerClickListener(this)
-
-        //request permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(context!!,
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity!!,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-                return
-            }
+        //seting up map
+        map.apply {
+            map.isMyLocationEnabled = true
+            setMapStyle(MapStyleOptions.loadRawResourceStyle(activity!!,  R.raw.night_map))
+            uiSettings.setAllGesturesEnabled(false)
         }
 
-        buildGoogleApiClient()
+        loading_map.visibility = View.GONE
 
-        //show button on top right to move to current location
-        map.isMyLocationEnabled = true
+        //request permission TODO
+        setUpPermission()
+
+        if (ActivityCompat.checkSelfPermission(context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            noLocationProvided()
+            return
+        }
+
 
         //when fusedLocationClient success on getting location
         fusedLocationClient.lastLocation.addOnSuccessListener {
                 location ->
-            if (location != null) {
-                Log.i(MainActivity.TAG, "location, lat: ${location.latitude} long: ${location.longitude}")
+            updateLocation(location)
+            populateNearby()
+        }.addOnFailureListener {
+            Log.e(MainActivity.TAG, "fusedLocationClient fail to get location")
+        }
+    }
 
-                lastLocation = location
+    /**
+     * This function will show error message and disable location-permission-dependent functions
+     *
+     * @author Muchlas Amirinanto
+     */
+    private fun noLocationProvided() {
+        map_warning.visibility = View.VISIBLE
+        map_card.visibility = View.GONE
+    }
 
-                saveLocation()
+    /**
+     * Requesting location permission for the app
+     * Should only be in the beginning ???
+     * TODO
+     *
+     * @author Muchlas Amirinanto
+     */
+    private fun setUpPermission() {
+        // Here, thisActivity is the current activity
+        if (ActivityCompat.checkSelfPermission(context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
 
-                val curLatLng = LatLng(location.latitude, location.longitude)
+            // Permission is not granted
+            // Should we show an explanation?
+            if (shouldShowRequestPermissionRationale(
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
 
-                updateUserMarker(curLatLng)
-
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, zoomLevel))
             } else {
-                Log.i(MainActivity.TAG, "NULL LOCATION")
+                // No explanation needed, we can request the permission.
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST_CODE)
+
             }
         }
     }
 
+
+    /**
+     * Saves last known user location into sharedPreference
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun saveLocation() {
         val pref =  activity!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        with (editor) {
+        with (pref.edit()) {
             //default
             var lat = "0"
             var lng = "0"
@@ -155,70 +222,107 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         }
     }
 
-    private fun buildGoogleApiClient() {
-
-    }
-
-    private fun updateUserMarker(location: LatLng) {
-        if (lastMarker != null) lastMarker?.remove()
-        else lastMarker = map.addMarker(MarkerOptions().position(location))
-
-    }
-
-    private fun addPlaceMarker(location: LatLng) {
-        val nearbyPlaces = NearbyPlaces("", 0.toDouble(), 0.toDouble())
-        nearbyPlacesList.add(nearbyPlaces)
-    }
-
-    private fun populateNearby() {
-        if (lastLocation != null) {
-            val googleUrl =
-                StringBuilder("https://maps.googleapis.com/maps/api/place/findplacefromtext/JSON?key=")
-                    .append(resources.getString(R.string.google_maps_key))
-                    .append("&locationbias=circle:300@")
-                    .append(lastLocation!!.latitude)
-                    .append(",")
-                    .append(lastLocation!!.longitude)
-                    .append("&fields=name,geometry,types")
-        }
-
-        nearbyPlacesList.add(NearbyPlaces("ERROR: Current Location Not Found", Double.NaN, Double.NaN))
-
-
-    }
-
-    override fun onLocationChanged(location: Location?) {
+    /**
+     * This function will update user's location marker on the map and save the location
+     *
+     * @author Muchlas Amirinanto
+     * @param location -> new user's location
+     */
+    private fun updateLocation(location: Location?) {
         if (location != null) {
             Log.i(MainActivity.TAG, "location, lat: ${location.latitude} long: ${location.longitude}")
+
             lastLocation = location
+
+            saveLocation()
+
             val curLatLng = LatLng(location.latitude, location.longitude)
-            updateUserMarker(curLatLng)
+
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, zoomLevel))
         } else {
             Log.i(MainActivity.TAG, "NULL LOCATION")
         }
     }
 
-    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
+    /**
+     * This function will fetch information of places nearby the user's current location using
+     * Google's Places API
+     *
+     * @author Muchlas Amirinanto
+     */
+    private fun populateNearby() {
+        // Use fields to define the data types to return.
+        var placeFields = listOf(Place.Field.NAME,
+            Place.Field.ID,
+            Place.Field.LAT_LNG,
+            Place.Field.TYPES)
+
+        // Use the builder to create a FindCurrentPlaceRequest.
+        var request = FindCurrentPlaceRequest.builder(placeFields).build()
+
+        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            placesClient.findCurrentPlace(request)
+                .addOnSuccessListener {
+                    for (result in it.placeLikelihoods) {
+                        Log.i(MainActivity.TAG, "name: ${result.place.name}, likelihood: ${result.place}")
+
+                        val place = result.place
+                        val lat = place.latLng?.latitude
+                        val lng = place.latLng?.longitude
+                        val id = place.id?.toInt()
+                        val type = place.types
+                        if (type == Place.Type.PARK) addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
+                    }
+
+                    loading_card.visibility = View.GONE
+
+                    if (nearbyPlacesList.isEmpty()) {
+                        noNearbyPlaces()
+                    }
+                }.addOnFailureListener {
+                    loading_card.visibility = View.GONE
+                    noNearbyPlaces()
+                    Log.e(MainActivity.TAG, "not found: ${it}")
+                }
+
+        } else {
+            // A local method to request required permissions;
+            setUpPermission()
+
+        }
+
     }
 
-    override fun onProviderEnabled(p0: String?) {
-
+    private fun noNearbyPlaces() {
+        no_nearby_warning.visibility = View.VISIBLE
     }
 
-    override fun onProviderDisabled(p0: String?) {
-
+    /**
+     * This function will add a NearbyPlace object to the nearby places list
+     * and update the refresher.
+     *
+     * Note:
+     * We limit the number of Nearby Place to be shown to 10 to avoid long list
+     *
+     * @author Muchlas Amirinanto
+     * @param nearbyPlace -> a NearbyPlace object with to be added to the list
+     */
+    fun addNearbyPlace(nearbyPlace: NearbyPlace) {
+        if (nearbyPlacesList.size >= 10) return
+        nearbyPlacesList.add(nearbyPlace)
+        adapter.refresh()
+        Log.d(MainActivity.TAG, nearbyPlace.name + " added, list: " + nearbyPlacesList)
     }
 
-    private fun getPlaces() {
-
-    }
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-        private const val PLACE_PICKER_REQUEST = 3
 
         private const val LAT_KEY = "USER_LAT"
         private const val LNG_KEY = "USER_LNG"
         private const val TIME_KEY = "USER_TIME"
+
+        private const val zoomLevel = 18.0f
     }
 }

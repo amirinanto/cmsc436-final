@@ -7,10 +7,6 @@
     <string name="daily">Daily</string>
     <string name="add_mission">Add A New Personal Mission</string>
 
-<<<<<<< HEAD
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-=======
     <string name="current_step">Current Steps:</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
@@ -43,5 +39,4 @@
     <string name="default_exp">1/10</string>
     <string name="default_zero">0</string>
 
->>>>>>> e98e9276ab58d57687b0e32aba1bef238cfec9cf
 </resources>

@@ -3,10 +3,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cmsc436.rpg.healcity.R
-import cmsc436.rpg.healcity.ui.map.NearbyPlaces
+import cmsc436.rpg.healcity.ui.map.NearbyPlace
 import kotlinx.android.synthetic.main.nearby_map_list_item.view.*
 
-class NearbyPlacesAdapter(val items : List<NearbyPlaces>) : RecyclerView.Adapter<NearbyPlacesAdapter.ViewHolder>() {
+class NearbyPlacesAdapter(val items : List<NearbyPlace>) : RecyclerView.Adapter<NearbyPlacesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
             = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.nearby_map_list_item, parent, false))
@@ -17,11 +17,13 @@ class NearbyPlacesAdapter(val items : List<NearbyPlaces>) : RecyclerView.Adapter
         holder.longitude.text = items[position].lng.toString()
     }
 
+    fun refresh() = notifyDataSetChanged()
+
     override fun getItemCount(): Int = items.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val placeName = itemView.placeName
-        val latitude = itemView.latittude
-        val longitude = itemView.longitude
+        val placeName = itemView.place_name_info
+        val latitude = itemView.place_distance
+        val longitude = itemView.place_reward
     }
 }

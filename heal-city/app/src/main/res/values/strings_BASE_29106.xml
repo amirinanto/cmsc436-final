@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Heal City</string>
+    <string name="title_home">Me</string>
+    <string name="title_dashboard">Mission</string>
+    <string name="title_notifications">Map</string>
+    <string name="personal">Personal</string>
+    <string name="daily">Daily</string>
+    <string name="add_mission">Add A New Personal Mission</string>
+</resources>

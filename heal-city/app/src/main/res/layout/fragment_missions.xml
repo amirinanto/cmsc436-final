@@ -22,8 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/AddNewMissionButton"
-            android:text="@string/add_mission"
-            android:onClick="AddNewMission"/>
+            android:text="@string/add_mission"/>
 
     </LinearLayout>
 
