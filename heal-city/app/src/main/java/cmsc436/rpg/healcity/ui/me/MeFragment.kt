@@ -14,6 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import cmsc436.rpg.healcity.MainActivity
 import cmsc436.rpg.healcity.R
+import cmsc436.rpg.healcity.TutorialFunctions
+import android.content.Intent
+
 
 class MeFragment : Fragment() {
 
@@ -44,6 +47,9 @@ class MeFragment : Fragment() {
             ViewModelProviders.of(this).get(MeViewModel::class.java)
 
         return inflater.inflate(R.layout.fragment_me, container, false)
+
+        var intent = Intent(context!!, TutorialFunctions::class.java)
+        startActivity(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,9 +142,12 @@ class MeFragment : Fragment() {
         private const val HAT_KEY = "HAT_ITEM"
         private const val PANTS_KEY = "PANTS_ITEM"
         private const val FEET_KEY = "FEET_ITEM"
+        private const val temp = 100
     }
+
 }
 
 interface onEquipSelected {
     fun onEquipSelected(meViewModel: MeViewModel)
 }
+
