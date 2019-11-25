@@ -69,6 +69,10 @@ class MainActivity : AppCompatActivity() {
 
         const val STEP_KEY = "STEP_KEY"
         const val ACHIEVEMENT_KEY = "ACH_KEY"
+
+        var missionTitles = arrayOf("Walking Goal", "Check-In Goal")
+        var missionDesc = arrayOf("Walk 1 mile", "Check-In at 1 location")
+        var missionProg = intArrayOf(0, 0)
     }
 
 }

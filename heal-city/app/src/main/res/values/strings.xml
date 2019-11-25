@@ -14,6 +14,8 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="enter_a_title">Enter a title...</string>
+    <string name="type">Type:</string>
+    <string name="number">Number</string>
 
     <string name="player_stat">Player Statistics</string>
     <string name="achievement">Player Achievement</string>
@@ -38,5 +40,18 @@
     <string name="default_date">NO_DATE</string>
     <string name="default_exp">1/10</string>
     <string name="default_zero">0</string>
+    
+    <string-array name="mission_type">
+        <item>Walk</item>
+        <item>Check-in</item>
+    </string-array>
+
+    <string-array name="mission_distance">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
 
 </resources>
