@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         const val PREF_FILE = "heal_city_pref"
 
         const val STEP_KEY = "STEP_KEY"
+        const val ACHIEVEMENT_KEY = "ACH_KEY"
     }
 
 }
