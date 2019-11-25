@@ -13,7 +13,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:screenOrientation="portrait">
         <activity android:name=".TutorialFunctions"></activity>
         <activity android:name=".WelcomeActivity" />
 
@@ -23,13 +24,8 @@
 
         <activity
             android:name=".MainActivity"
-<<<<<<< HEAD
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-=======
-            android:screenOrientation="portrait"
-            android:label="@string/app_name">
->>>>>>> e98e9276ab58d57687b0e32aba1bef238cfec9cf
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

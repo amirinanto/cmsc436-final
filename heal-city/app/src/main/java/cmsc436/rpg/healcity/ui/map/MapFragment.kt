@@ -271,7 +271,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val place = result.place
                         val lat = place.latLng?.latitude
                         val lng = place.latLng?.longitude
-                        val id = place.id?.toInt()
+                        val id = place.id?.toString()
                         val type = place.types
                         if (type == Place.Type.PARK) addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
                     }

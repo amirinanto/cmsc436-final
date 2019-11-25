@@ -16,14 +16,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import cmsc436.rpg.healcity.MainActivity
 import cmsc436.rpg.healcity.R
-<<<<<<< HEAD
 import cmsc436.rpg.healcity.TutorialFunctions
 import android.content.Intent
-
-=======
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_me.*
->>>>>>> e98e9276ab58d57687b0e32aba1bef238cfec9cf
 
 class MeFragment : Fragment() {
 
@@ -82,7 +78,6 @@ class MeFragment : Fragment() {
             }
         }
     }
-<<<<<<< HEAD
 
     private fun isEquipSaved(sharedPref: SharedPreferences?): Boolean {
         return sharedPref!!.contains(HEAD_KEY) &&
