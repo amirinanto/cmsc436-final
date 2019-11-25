@@ -107,17 +107,16 @@ class MissionFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FITNESS_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                steps = data?.getStringExtra(MainActivity.STEP_KEY)!!.toInt()
+                steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
             }
-
         }
     }
 
-        companion object {
-            private const val LAT_KEY = "USER_LAT"
-            private const val LNG_KEY = "USER_LNG"
-            private const val TIME_KEY = "USER_TIME"
-            private const val FITNESS_REQ_CODE = 1
+    companion object {
+        private const val LAT_KEY = "USER_LAT"
+        private const val LNG_KEY = "USER_LNG"
+        private const val TIME_KEY = "USER_TIME"
+        private const val FITNESS_REQ_CODE = 1
     }
 
 
