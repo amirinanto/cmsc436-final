@@ -281,8 +281,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val lng = place.latLng?.longitude
                         val id = place.id
                         val type = place.types
-                        if (id != null && type == Place.Type.PARK)
-                            addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
+
+                        if (id != null && type.toString() == Place.Type.PARK.toString())
+                            addNearbyPlace(NearbyPlace(place.name!!, lat!!.toFloat(), lng.toString(), id.toInt()))
                     }
 
                     loading_card.visibility = View.GONE

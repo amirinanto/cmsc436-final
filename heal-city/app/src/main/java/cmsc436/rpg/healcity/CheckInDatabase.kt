@@ -45,7 +45,7 @@ class CheckInDatabase(context: Context):
 
     fun getCheckInOnDate(date: String): ArrayList<String> {
         val checkInList = ArrayList<String>()
-        var cursor : Cursor? = null
+        var cursor : Cursor?
         try {
             cursor = readableDatabase.rawQuery("SELECT * FROM ${TABLE_NAME} WHERE ${COLUMN_DATE} LIKE ${date}", null)
         } catch (e: SQLiteException) {

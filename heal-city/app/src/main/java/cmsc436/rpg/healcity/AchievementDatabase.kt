@@ -38,7 +38,7 @@ class AchievementDatabase(context: Context):
 
     fun getAllAchievements(): ArrayList<Achievement> {
         val achievementList = ArrayList<Achievement>()
-        var cursor : Cursor? = null
+        var cursor : Cursor?
         val db = writableDatabase
         try {
             cursor = readableDatabase.rawQuery("SELECT * FROM ${TABLE_NAME}", null)
@@ -48,7 +48,7 @@ class AchievementDatabase(context: Context):
             return achievementList
         }
 
-        if (cursor!!.moveToFirst())
+        if (cursor.moveToFirst())
             while (cursor.isAfterLast == false) {
                 with (cursor) {
                     achievementList.add(
