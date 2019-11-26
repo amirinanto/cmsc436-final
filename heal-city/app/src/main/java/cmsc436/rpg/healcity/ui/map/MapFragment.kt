@@ -74,6 +74,14 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         return root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Don't destroy Fragment on reconfiguration
+        retainInstance = true
+
+    }
+
     /**
      * Setting up nearby places list and API Client
      *
@@ -271,9 +279,10 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val place = result.place
                         val lat = place.latLng?.latitude
                         val lng = place.latLng?.longitude
-                        val id = place.id?.toString()
+                        val id = place.id
                         val type = place.types
-                        if (type == Place.Type.PARK) addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
+                        if (id != null && type == Place.Type.PARK)
+                            addNearbyPlace(NearbyPlace(place.name!!, lat!!, lng!!, id = id!!))
                     }
 
                     loading_card.visibility = View.GONE

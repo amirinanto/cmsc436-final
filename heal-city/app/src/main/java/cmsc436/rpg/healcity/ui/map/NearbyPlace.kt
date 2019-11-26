@@ -4,27 +4,6 @@ import android.location.Location
 import java.util.*
 
 data class NearbyPlace (var name: String,
-                        var lat: Double,
-                        var lng: Double,
                         var distance: Float = -1f,
-                        var id: String = "-1",
-                        var reward_exp: Int = 0,
-                        var checked: Boolean = false,
-                        var checkInDate: Date = Date(0)) {
-
-    fun getDistance(from_lat: Double, from_long: Double) : Float {
-        with(floatArrayOf()) {
-            Location.distanceBetween(from_lat, from_long, lat, lng,this)
-            return this[0]
-        }
-    }
-
-    fun checkIn(date: Date): Boolean {
-        //already checked in
-        if (checked) return false
-
-        checkInDate = date
-        checked = true
-        return true
-    }
-}
+                        var id: String = "",
+                        var reward_exp: Int = 5)

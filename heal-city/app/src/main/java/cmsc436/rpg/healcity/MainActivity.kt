@@ -2,23 +2,21 @@ package cmsc436.rpg.healcity
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Layout
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.ImageView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import android.content.Intent
+import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // remove title bar and make screen full screen.
@@ -41,34 +39,18 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        checkGooglePlayServices()
-
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        sharedPref = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+
     }
-
-
-    private fun checkGooglePlayServices(): Boolean {
-        val googleAPI = GoogleApiAvailability.getInstance();
-        val result = googleAPI.isGooglePlayServicesAvailable(this);
-        if(result != ConnectionResult.SUCCESS) {
-            if(googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(this, result,
-                    0).show();
-            }
-            return false;
-        }
-        return true;
-    }
-
 
     companion object {
         const val TAG = "HEAL-CITY"
         const val PREF_FILE = "heal_city_pref"
 
         const val STEP_KEY = "STEP_KEY"
-        const val ACHIEVEMENT_KEY = "ACH_KEY"
 
         var missionTitles = arrayOf("Walking Goal", "Check-In Goal")
         var missionDesc = arrayOf("Walk 1 mile", "Check-In at 1 location")

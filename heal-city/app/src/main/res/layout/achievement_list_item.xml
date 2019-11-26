@@ -10,11 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/medium_gap"
-        android:layout_marginBottom="@dimen/medium_gap"
         android:text="@string/default_achievement_name"
         android:textAllCaps="false"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,11 +31,10 @@
         android:id="@+id/achievement_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/medium_gap"
-        android:layout_marginEnd="@dimen/big_gap"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="@dimen/medium_gap"
         android:text="@string/default_date"
-        app:layout_constraintBottom_toTopOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/achievement_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>
