@@ -1,5 +1,7 @@
 package cmsc436.rpg.healcity.ui.me
 
+import cmsc436.rpg.healcity.TutorialFunctions
+
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -14,6 +16,8 @@ import cmsc436.rpg.healcity.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_me.*
+import android.content.Intent;
+
 
 class MeFragment : Fragment() {
 
@@ -32,9 +36,8 @@ class MeFragment : Fragment() {
         homeViewModel =
             ViewModelProviders.of(this).get(MeViewModel::class.java)
 
-//        var intent = Intent(context!!, TutorialFunctions::class.java)
-//        startActivity(intent)
-
+        var intent = Intent(context!!, TutorialFunctions::class.java)
+        startActivity(intent)
 
         return inflater.inflate(R.layout.fragment_me, container, false)
     }
