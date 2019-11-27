@@ -71,13 +71,13 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         var stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
         if (stepSensor != null) {
+            sensorManager?.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI)
+        } else {
             Toast.makeText(this, "No Step Counter Sensor!", Toast.LENGTH_SHORT).show()
             isTrackable = false
             pause_button.isEnabled = false
             stop_button.isEnabled = false
             saveData(1)
-        } else {
-            sensorManager?.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI)
         }
     }
 

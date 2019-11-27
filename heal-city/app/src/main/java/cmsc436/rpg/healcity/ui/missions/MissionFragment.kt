@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class MissionFragment : Fragment() {
     private lateinit var mTitles: Array<String>
     private lateinit var mDesc: Array<String>
     private lateinit var mProg: IntArray
+    private lateinit var simpleAdapter: SimpleAdapter
 
     var missions = ArrayList<Mission>()
 
@@ -54,9 +56,14 @@ class MissionFragment : Fragment() {
         mDesc = MainActivity.missionDesc
         mProg = MainActivity.missionProg
 
-        val button = root.findViewById(R.id.AddNewMissionButton) as Button
-        button.setOnClickListener{ view ->
+        val addMissionButton = root.findViewById(R.id.AddNewMissionButton) as Button
+        addMissionButton.setOnClickListener{ view ->
             addNewMission(view)
+        }
+
+        val startWalkingButton = root.findViewById(R.id.StartWalking) as Button
+        startWalkingButton.setOnClickListener { view ->
+            trackSteps(view)
         }
 
         for (i in mTitles.indices) {
@@ -67,14 +74,10 @@ class MissionFragment : Fragment() {
             aList.add(hm)
         }
 
-        val simpleAdapter = SimpleAdapter(context, aList, R.layout.mission, from, to)
+        simpleAdapter = SimpleAdapter(context, aList, R.layout.mission, from, to)
 
         mListView = root.findViewById(R.id.mission_list)
         mListView.adapter = simpleAdapter
-
-
-        var intent = Intent(context!!, FitnessTrackingActivity::class.java)
-        startActivityForResult(intent, FITNESS_REQ_CODE)
 
         return root
     }
@@ -112,6 +115,7 @@ class MissionFragment : Fragment() {
             MainActivity.missionTitles += title
             MainActivity.missionDesc += hm["listview_description"].toString()
             MainActivity.missionProg += 0
+            simpleAdapter.notifyDataSetChanged()
 
             aList.add(hm)
 
@@ -122,10 +126,16 @@ class MissionFragment : Fragment() {
         dialog.show()
     }
 
+    fun trackSteps(v: View) {
+        var intent = Intent(context!!, FitnessTrackingActivity::class.java)
+        startActivityForResult(intent, FITNESS_REQ_CODE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FITNESS_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
+                Log.i("STEPS", steps.toString())
             }
         }
     }

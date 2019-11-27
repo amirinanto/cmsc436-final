@@ -5,25 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="48dp">
-
-    <LinearLayout android:orientation="vertical"
-        android:id="@+id/buttons"
-        android:layout_height="fill_parent"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
 
-        <ListView
-            android:id="@+id/mission_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <LinearLayout android:orientation="vertical"
+            android:id="@+id/buttons"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent">
 
+            <ListView
+                android:id="@+id/mission_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/AddNewMissionButton"
+                android:text="@string/add_mission"/>
+
+        </LinearLayout>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/AddNewMissionButton"
-            android:text="@string/add_mission"/>
-
+            android:id="@+id/StartWalking"
+            android:text="@string/start_walking"/>
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

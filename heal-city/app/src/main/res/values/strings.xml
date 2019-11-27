@@ -40,7 +40,8 @@
     <string name="default_date">NO_DATE</string>
     <string name="default_exp">1/10</string>
     <string name="default_zero">0</string>
-    
+    <string name="start_walking">Start Walking!</string>
+
     <string-array name="mission_type">
         <item>Walk</item>
         <item>Check-in</item>
