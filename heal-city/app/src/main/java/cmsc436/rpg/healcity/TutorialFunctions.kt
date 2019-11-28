@@ -27,6 +27,8 @@ class TutorialFunctions : AppIntro() {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState)
         // var frag = Fragment()
+
+        // comment setContentView
         //setContentView(R.layout.activity_main);
 
         preferenceHelper = PreferenceHelper(this)
@@ -38,7 +40,7 @@ class TutorialFunctions : AppIntro() {
             this.finish()
         }
 
-        addSlide(IntroFragment1()) //extend AppIntro and comment setContentView
+        addSlide(IntroFragment1()) //extend AppIntro
         addSlide(IntroFragment2())
         addSlide(IntroFragment3())
 
@@ -90,7 +92,7 @@ class TutorialFunctions : AppIntro() {
         val intent = Intent(this@TutorialFunctions, WelcomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
-        this.finish()
+       // this.finish()
     }
 
     override fun onDonePressed(currentFragment: Fragment?) {
@@ -101,7 +103,7 @@ class TutorialFunctions : AppIntro() {
         val intent = Intent(this@TutorialFunctions, WelcomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
-        this.finish()
+        //this.finish()
     }
 /*
     override fun onSlideChanged(oldFragment: Fragment?, newFragment: Fragment?) {

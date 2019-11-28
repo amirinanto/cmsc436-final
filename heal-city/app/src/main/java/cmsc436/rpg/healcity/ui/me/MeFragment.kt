@@ -31,8 +31,8 @@ class MeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
 
-//        var intent = Intent(context!!, TutorialFunctions::class.java)
-//        startActivity(intent)
+        //var intent = Intent(context!!, TutorialFunctions::class.java)
+        //startActivity(intent)
 
         return inflater.inflate(R.layout.fragment_me, container, false)
     }

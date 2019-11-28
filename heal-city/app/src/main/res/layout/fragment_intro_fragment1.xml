@@ -1,22 +1,62 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-android:gravity="center"
-android:background="#c64e77">
+android:background="@color/bg_screen1">
 
-<TextView
+<LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textColor="#fff"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="Intro 1"/>
+    android:layout_centerInParent="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/button"
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Button" />
+        android:text="@string/page_one_title"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_title"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/page_one_descrip"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_desc" />
+
 
 </LinearLayout>
+
+    <Button
+
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:fontFamily="sans-serif"
+        android:text="@string/tutorial_next_button"
+        android:textColor="#F7FAF8"
+        android:textStyle="bold"
+        />
+
+    <Button
+
+        android:id="@+id/skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@null"
+        android:text="@string/tutorial_skip_button"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>

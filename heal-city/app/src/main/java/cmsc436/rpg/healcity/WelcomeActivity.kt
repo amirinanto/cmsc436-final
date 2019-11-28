@@ -18,7 +18,7 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
-        btn = findViewById(R.id.btn) as Button
+        btn = findViewById(R.id.next) as Button
         preferenceHelper = PreferenceHelper(this)
 
         btn!!.setOnClickListener {
