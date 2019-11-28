@@ -21,7 +21,7 @@ class IntroFragment1 : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val f = childFragmentManager
-        val pressed = f.findFragmentById(R.id.btn)
+        //val pressed = f.findFragmentById(R.id.btn)
 
         //val pressed = getView().findViewById(R.id.btn)
         // val pressed = getView().findFragmentByTag(R.id.btn)

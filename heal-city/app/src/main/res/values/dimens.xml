@@ -2,7 +2,7 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="big_gap">16dp</dimen>
     <dimen name="medium_gap">8dp</dimen>
-<<<<<<< HEAD
+
 
     <dimen name="height_of_dots">30dp</dimen>
     <dimen name="bottom_margin_dots">20dp</dimen>
@@ -10,8 +10,8 @@
     <dimen name="slide_title">30dp</dimen>
     <dimen name="slide_desc">16dp</dimen>
 
-||||||| merged common ancestors
-=======
+
+
     <dimen name="small_gap">4dp</dimen>
->>>>>>> b6642613486b906798b8ee04fe21f70d1de91498
+
 </resources>

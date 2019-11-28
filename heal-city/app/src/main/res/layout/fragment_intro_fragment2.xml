@@ -1,50 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="@color/bg_screen1">
 
-
-
-    <TextView
-
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="117dp"
-        android:text="@string/app_intro_skip_button"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#fff" />
-
-    <ImageButton
-        android:id="@+id/back"
-        style="@style/AppIntroButtonStyleCompat"
-        android:contentDescription="@string/app_intro_back_button"
-        android:rotation="180"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/page_two_title"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/slide_title"
+            android:textStyle="bold" />
 
-    <ImageButton
-        android:id="@+id/next"
-        style="@style/AppIntroButtonStyleCompat"
-        android:contentDescription="@string/app_intro_next_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-       />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif-condensed"
+            android:paddingLeft="@dimen/desc_padding"
+            android:paddingRight="@dimen/desc_padding"
+            android:text="@string/page_two_descrip"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/slide_desc" />
+
+
+    </LinearLayout>
 
     <Button
-        android:id="@+id/done"
-        style="@style/AppIntroButtonStyleCompat"
-        android:labelFor="@string/app_intro_done_button"
-        android:text="@string/app_intro_done_button"
 
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:fontFamily="sans-serif"
+        android:text="@string/tutorial_next_button"
+        android:textColor="#F7FAF8"
+        android:textStyle="bold"
+        />
+
+    <Button
+
+        android:id="@+id/skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@null"
+        android:text="@string/tutorial_skip_button"
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>
