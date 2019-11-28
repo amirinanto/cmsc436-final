@@ -7,64 +7,43 @@
     android:minHeight="24dp">
 
     <TextView
-        android:id="@+id/place_name_text"
+        android:id="@+id/place_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Name: "
+        android:text="@string/default_name"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/place_name_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="place_name"
-        app:layout_constraintStart_toEndOf="@+id/place_name_text"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/place_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:text=" Point"
+        android:layout_marginBottom="@dimen/small_gap"
+        android:text="@string/default_zero"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/place_name_text"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/place_name" />
 
     <TextView
         android:id="@+id/place_reward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="@dimen/big_gap"
         android:layout_marginTop="4dp"
-        android:text="0 Point"
-        app:layout_constraintStart_toEndOf="@+id/place_distance"
-        app:layout_constraintTop_toBottomOf="@+id/place_name_info" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        style="@android:style/Widget.Material.ImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:cropToPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/checkBox"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_directions" />
+        android:text="@string/default_zero"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/place_distance_text"
+        app:layout_constraintTop_toBottomOf="@+id/place_name" />
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/place_checked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checked="false"
-        android:text="Check In"
+        android:text="@string/checked_in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -79,5 +58,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/place_distance" />
+
+    <TextView
+        android:id="@+id/place_distance_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/small_gap"
+        android:layout_marginTop="@dimen/small_gap"
+        android:text="@string/meters"
+        app:layout_constraintStart_toEndOf="@+id/place_distance"
+        app:layout_constraintTop_toBottomOf="@+id/place_name" />
+
+    <TextView
+        android:id="@+id/place_reward_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/small_gap"
+        android:layout_marginTop="@dimen/small_gap"
+        android:text="@string/point"
+        app:layout_constraintStart_toEndOf="@+id/place_reward"
+        app:layout_constraintTop_toBottomOf="@+id/place_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

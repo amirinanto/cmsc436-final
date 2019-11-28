@@ -3,16 +3,16 @@ package cmsc436.rpg.healcity
 import android.content.SharedPreferences
 import cmsc436.rpg.healcity.ui.map.NearbyPlace
 import cmsc436.rpg.healcity.ui.me.Achievement
+import java.text.SimpleDateFormat
+import java.util.*
 
-class UserReward {
+object User {
 
-    companion object {
-        const val PLAYER_NAME_KEY = "player_name"
-        const val PLAYER_LEVEL_KEY = "player_level"
-        const val PLAYER_EXP_KEY = "player_exp"
-        const val PLAYER_STEPS_KEY = "player_steps"
-        const val PLAYER_TARGET_STEPS = "player_target_step"
-    }
+    const val PLAYER_NAME_KEY = "player_name"
+    const val PLAYER_LEVEL_KEY = "player_level"
+    const val PLAYER_EXP_KEY = "player_exp"
+    const val PLAYER_STEPS_KEY = "player_steps"
+    const val PLAYER_TARGET_STEPS = "player_target_step"
 
     fun initPlayer(sharedPref: SharedPreferences, name: String, target: Int) {
         with (sharedPref.edit()) {
@@ -44,7 +44,6 @@ class UserReward {
     }
 
     fun updatePlayer(sharedPref: SharedPreferences, player: Player) {
-
         with (sharedPref.edit()) {
             putString(PLAYER_NAME_KEY, player.name)
             putInt(PLAYER_TARGET_STEPS, player.target)
@@ -55,28 +54,7 @@ class UserReward {
         }
     }
 
-    fun checkIn(place: NearbyPlace,
-                reward: Int,
-                date: String,
-                sharedPref: SharedPreferences,
-                achDB: AchievementDatabase,
-                chiDB: CheckInDatabase): Boolean {
-        val player = getPlayer(sharedPref)
-
-        if (chiDB.isCheckedIn(place.id))
-            return false
-
-        with (player!!) {
-            addExp(player, reward)
-            achDB.addAchievement(Achievement("Check in at ${place.name} for ${reward} experience.", date))
-            chiDB.addCheckIn(place.id, date)
-            updatePlayer(sharedPref, this)
-        }
-
-        return true
-    }
-
-    private fun addExp(player: Player, reward: Int) {
+    fun addExp(player: Player, reward: Int) {
         with (player) {
             val nextLevel = level * 5
             val exp = exp + reward
@@ -85,4 +63,9 @@ class UserReward {
             }
         }
     }
+
+    val date: String
+        get() =
+            SimpleDateFormat("dd/mm/yyyy", Locale.getDefault())
+                .format(Date()).toString()
 }

@@ -28,3 +28,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext{
+    anko_version='0.10.8'
+}
+

@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="@dimen/medium_gap">
+            android:padding="@dimen/big_gap">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/loading_card"
@@ -133,7 +133,7 @@
                 android:gravity="center"
                 android:text="@string/no_nearby"
                 android:textAlignment="center"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/nearby_headline"

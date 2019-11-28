@@ -13,6 +13,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 import kotlinx.android.synthetic.main.activity_tracking.*
+import org.jetbrains.anko.db.insert
+import org.jetbrains.anko.toast
+import java.lang.Integer.parseInt
 
 class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(), SensorEventListener{
 
@@ -74,9 +77,6 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
             sensorManager?.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI)
         } else {
             Toast.makeText(this, "No Step Counter Sensor!", Toast.LENGTH_SHORT).show()
-            isTrackable = false
-            pause_button.isEnabled = false
-            stop_button.isEnabled = false
             saveData(1)
         }
     }
@@ -91,14 +91,39 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         if (abort == 1) {
             setResult(Activity.RESULT_CANCELED)
         } else {
-            result.putExtra(MainActivity.STEP_KEY, steps_value.text.toString().toInt())
-            setResult(Activity.RESULT_OK, result)
+            val steps = parseInt(steps_value.text.toString())
+            if (steps > 0) {
+                result.putExtra(MainActivity.STEP_KEY, steps_value.text.toString().toInt())
+                setResult(Activity.RESULT_OK, result)
+
+                val reward = steps / 100
+                if (!addSteps(steps, reward))
+                    toast("Player has not been initialized, please go to welcome screen.")
+            }
         }
         finish()
     }
 
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+    private fun addSteps(steps: Int, reward: Int): Boolean {
+        val sharedPref = applicationContext.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+        if (User.getPlayer(sharedPref) == null)
+            return false
+
+        database.use {
+            insert(
+                DBHelper.TABLE_ACHIEVEMENT,
+                DBHelper.COL_NAME to "Done ${steps} steps for ${reward} exp",
+                DBHelper.COL_DATE to User.date
+            )
+        }
+
+        val player = User.getPlayer(sharedPref)!!
+        User.addExp(player, reward)
+        User.updatePlayer(sharedPref, player)
+        return true
     }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (isRunning) {
