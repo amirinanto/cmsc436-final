@@ -2,4 +2,5 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="big_gap">16dp</dimen>
     <dimen name="medium_gap">8dp</dimen>
+    <dimen name="small_gap">4dp</dimen>
 </resources>

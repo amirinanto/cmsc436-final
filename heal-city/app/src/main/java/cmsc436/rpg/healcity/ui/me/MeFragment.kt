@@ -21,8 +21,6 @@ import android.content.Intent;
 
 class MeFragment : Fragment() {
 
-    private lateinit var homeViewModel: MeViewModel
-
     private var achievementList = ArrayList<Achievement>()
     private lateinit var adapter: AchievementsAdapter
 
@@ -33,11 +31,8 @@ class MeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
 
-        homeViewModel =
-            ViewModelProviders.of(this).get(MeViewModel::class.java)
-
-        var intent = Intent(context!!, TutorialFunctions::class.java)
-        startActivity(intent)
+//        var intent = Intent(context!!, TutorialFunctions::class.java)
+//        startActivity(intent)
 
         return inflater.inflate(R.layout.fragment_me, container, false)
     }

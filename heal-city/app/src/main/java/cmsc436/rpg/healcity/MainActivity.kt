@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity() {
 
         sharedPref = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
 
+        // Test player
+        User.initPlayer(sharedPref, "Muchlas", 1000)
+
     }
 
     companion object {

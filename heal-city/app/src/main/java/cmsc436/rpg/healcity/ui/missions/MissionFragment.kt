@@ -22,7 +22,6 @@ import cmsc436.rpg.healcity.FitnessTrackingActivity
 
 class MissionFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: MissionViewModel
     private lateinit var mListView: ListView
     private lateinit var missionList: ListView
     private lateinit var mListAdapter: ListAdapter
@@ -48,8 +47,6 @@ class MissionFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dashboardViewModel =
-            ViewModelProviders.of(this).get(MissionViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_missions, container, false)
 
         mTitles = MainActivity.missionTitles

@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import cmsc436.rpg.healcity.MainActivity
 import cmsc436.rpg.healcity.R
+import cmsc436.rpg.healcity.database
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -33,8 +34,6 @@ import kotlinx.android.synthetic.main.fragment_map.*
 
 class MapFragment : Fragment(), OnMapReadyCallback{
 
-
-    private lateinit var notificationsViewModel: MapViewModel
     private lateinit var googleMap: SupportMapFragment
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -49,9 +48,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     private lateinit var adapter: NearbyPlacesAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        notificationsViewModel =
-            ViewModelProviders.of(this).get(MapViewModel::class.java)
-
         var root = inflater.inflate(R.layout.fragment_map, container, false)
 
         //map start thingy
@@ -90,14 +86,26 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        nearbyPlacesList = ArrayList<NearbyPlace>()
+        nearbyPlacesList = ArrayList()
 
-        adapter = NearbyPlacesAdapter(nearbyPlacesList)
+        adapter = NearbyPlacesAdapter(nearbyPlacesList) {
+            checkIn(it)
+            adapter.refresh()
+        }
         listview_nearby.layoutManager = LinearLayoutManager(context!!)
         listview_nearby.adapter = adapter
 
         Places.initialize(context!!, resources.getString(R.string.google_maps_key))
         placesClient = Places.createClient(context!!)
+    }
+
+    /**
+     * TODO
+     */
+    private fun checkIn(place: NearbyPlace) {
+        context!!.database.use {
+
+        }
     }
 
     /**
@@ -277,13 +285,13 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         Log.i(MainActivity.TAG, "name: ${result.place.name}, likelihood: ${result.place}")
 
                         val place = result.place
-                        val lat = place.latLng?.latitude
-                        val lng = place.latLng?.longitude
-                        val id = place.id
-                        val type = place.types
-
-                        if (id != null && type.toString() == Place.Type.PARK.toString())
-                            addNearbyPlace(NearbyPlace(place.name!!, lat!!.toFloat(), lng.toString(), id.toInt()))
+                        val lat = place.latLng?.latitude!!
+                        val lng = place.latLng?.longitude!!
+                        val distance = FloatArray(2)
+                        Location.distanceBetween(lastLocation!!.latitude, lastLocation!!.longitude, lat, lng, distance)
+                        val id = place.id.toString()
+                        if (id != null && distance[0] != 0f)
+                            addNearbyPlace(NearbyPlace(place.name!!, distance[0], id = id))
                     }
 
                     loading_card.visibility = View.GONE

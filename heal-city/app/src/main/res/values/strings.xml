@@ -27,6 +27,9 @@
     <string name="stat_exp">Experience:</string>
     <string name="places_visited">Places Visited:</string>
     <string name="steps_daily">Steps Daily</string>
+    <string name="meters">Meters</string>
+    <string name="point">Points</string>
+    <string name="checked_in">Checked In?</string>
 
     <string name="nearby">Nearby Parks</string>
     <string name="no_location_permission">No Location provided, this tab will not work :(</string>
@@ -34,7 +37,7 @@
     <string name="loading_map">Loading map..</string>
     <string name="no_nearby">No nearby parks found.\nPlease check your connection.\n\n<b>Tip</b>:\nClick on the Map tab to refresh :)</string>
 
-    <string name="default_name">Player_Name</string>
+    <string name="default_name">Name</string>
     <string name="default_level">Player_Level</string>
     <string name="default_achievement_name">ACHIEVEMENT_NAME</string>
     <string name="default_date">NO_DATE</string>
