@@ -1,21 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/bg_screen1">
 
-    <TextView
+
+    <LinearLayout
+        android:id="@+id/layoutOfDots"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_of_dots"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/bottom_margin_dots"
+        android:background="#2196F3"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+    <View
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome to App"
-        android:textSize="25sp"
-        android:textColor="#000"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/layoutOfDots"
+        android:alpha=".5"
+        android:background="@android:color/white" />
+    </LinearLayout>
 
     <Button
+
+        android:id="@+id/next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn"
-        android:text="click here to see intro when restarting the app"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:fontFamily="sans-serif"
+        android:text="@string/tutorial_next_button"
+        android:textColor="#F7FAF8"
+        android:textStyle="bold" />
 
-</LinearLayout>
+    <Button
+
+        android:id="@+id/skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@null"
+        android:text="@string/tutorial_skip_button"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/welcome_text"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        android:textColor="#F8FAF8" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="146dp"
+        android:layout_height="157dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="116dp"
+        android:text="@string/welcome_descrip" />
+
+</RelativeLayout>

@@ -1,15 +1,50 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:background="#25ed46">
+    >
+
+
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Intro 2"/>
 
-</LinearLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="117dp"
+        android:text="@string/app_intro_skip_button"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#fff" />
+
+    <ImageButton
+        android:id="@+id/back"
+        style="@style/AppIntroButtonStyleCompat"
+        android:contentDescription="@string/app_intro_back_button"
+        android:rotation="180"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+
+
+    <ImageButton
+        android:id="@+id/next"
+        style="@style/AppIntroButtonStyleCompat"
+        android:contentDescription="@string/app_intro_next_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+       />
+
+    <Button
+        android:id="@+id/done"
+        style="@style/AppIntroButtonStyleCompat"
+        android:labelFor="@string/app_intro_done_button"
+        android:text="@string/app_intro_done_button"
+
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</RelativeLayout>

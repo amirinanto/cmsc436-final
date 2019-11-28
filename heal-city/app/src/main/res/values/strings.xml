@@ -42,6 +42,15 @@
     <string name="default_zero">0</string>
     <string name="start_walking">Start Walking!</string>
 
+
+    <string name="tutorial_next_button">NEXT</string>
+    <string name="tutorial_skip_button">SKIP</string>
+    <string name="welcome_text">Welcome to Heal City!</string>
+    <string name="page_one_title">First slide</string>
+    <string name="page_one_descrip">Description of slide</string>
+    <string name ="welcome_descrip">Heal City is a game that encourages you to be physically active while incorporating a rewarding experience. Enjoy!</string>
+
+
     <string-array name="mission_type">
         <item>Walk</item>
         <item>Check-in</item>
