@@ -1,7 +1,5 @@
 package cmsc436.rpg.healcity.ui.me
 
-import cmsc436.rpg.healcity.TutorialFunctions
-
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -11,12 +9,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import cmsc436.rpg.healcity.MainActivity
-import cmsc436.rpg.healcity.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_me.*
 import android.content.Intent;
+import android.util.Log
+import android.widget.Toast
+import cmsc436.rpg.healcity.*
+import org.jetbrains.anko.db.*
 
 
 class MeFragment : Fragment() {
@@ -53,36 +53,50 @@ class MeFragment : Fragment() {
         //dummy list
         //for (i in 1..100) achievementList.add(Achievement("Achivement ${i}"))
 
+//        loadDummyAchievements()
+        loadAchievements()
+
         adapter = AchievementsAdapter(achievementList)
         achievement_list.layoutManager = LinearLayoutManager(context)
         achievement_list.adapter = adapter
 
-        loadAchievements()
     }
 
     private fun loadAchievements() {
-        with (sharedPref) {
-            if (contains(ACHIEVEMENT_KEY)) {
-                val json = getString(ACHIEVEMENT_KEY, null)
-                if (json != null)
-                    updateAchievementList(Gson().fromJson<ArrayList<Achievement>>(json))
+        achievementList.clear()
+        context!!.database.use {
+            select(DBHelper.TABLE_ACHIEVEMENT).orderBy(DBHelper.COL_DEF_ID, SqlOrderDirection.DESC).exec {
+                parseList(object : MapRowParser<List<Achievement>> {
+                    override fun parseRow(columns: Map<String, Any?>): List<Achievement> {
+                        val name = columns.getValue(DBHelper.COL_NAME)
+                        val date = columns.getValue(DBHelper.COL_DATE)
+
+                        val achievement = Achievement(name.toString(), date.toString())
+                        achievementList.add(achievement)
+                        Log.i(MainActivity.TAG, "parsed: ${achievement}")
+
+                        return achievementList
+                    }
+                })
             }
+        }
+        if (achievementList.isEmpty()) {
+            no_achievement_warning.visibility = View.VISIBLE
         }
     }
 
-    private fun updateAchievementList(newList: ArrayList<Achievement>) {
-        achievementList = newList
-        adapter.refresh()
+    private fun loadDummyAchievements() {
+        val dummyList = ArrayList<Achievement>()
+        val date = User.date
+        for (i in 1..100) {
+            dummyList.add(Achievement("achivement .. ${i}", date))
+        }
+        for (x in dummyList) {
+            context!!.database.use {
+                insert(DBHelper.TABLE_ACHIEVEMENT,
+                    DBHelper.COL_NAME to x.name,
+                    DBHelper.COL_DATE to x.date)
+            }
+        }
     }
-
-    /**
-     * https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
-     */
-    inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
-
-
-    companion object {
-        const val ACHIEVEMENT_KEY = "ACH_KEY"
-    }
-
 }

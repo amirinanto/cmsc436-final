@@ -3,17 +3,16 @@ package cmsc436.rpg.healcity
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import org.jetbrains.anko.db.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class DBHelper private constructor(context: Context): ManagedSQLiteOpenHelper(context, DB_FILE, null, 1) {
 
     companion object {
         private var instance: DBHelper? = null
 
-        const val DB_FILE = "heal_city.db"
+        const val DB_FILE = "heal_city"
         const val TABLE_ACHIEVEMENT = "achievements"
         const val TABLE_CIN = "check_in"
+        const val COL_DEF_ID = "_id"
         const val COL_NAME = "name"
         const val COL_ID = "placeid"
         const val COL_DATE = "date"
@@ -26,7 +25,7 @@ class DBHelper private constructor(context: Context): ManagedSQLiteOpenHelper(co
         db.transaction {
             createTable(
                 TABLE_ACHIEVEMENT, true,
-                "id" to INTEGER + PRIMARY_KEY + AUTOINCREMENT,
+                COL_DEF_ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT,
                 COL_NAME to TEXT,
                 COL_DATE to TEXT
             )
@@ -36,7 +35,6 @@ class DBHelper private constructor(context: Context): ManagedSQLiteOpenHelper(co
                 COL_DATE to TEXT
             )
         }
-
     }
 
     override fun onUpgrade(db: SQLiteDatabase, old: Int, new: Int) {
@@ -46,7 +44,6 @@ class DBHelper private constructor(context: Context): ManagedSQLiteOpenHelper(co
         }
         onCreate(db)
     }
-
 
 }
 
