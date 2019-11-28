@@ -69,3 +69,9 @@ object User {
             SimpleDateFormat("dd/mm/yyyy", Locale.getDefault())
                 .format(Date()).toString()
 }
+
+data class Player(val name: String,
+                  var target: Int,
+                  var level: Int = 1,
+                  var exp: Int = 0,
+                  var steps: Int = 0)

@@ -15,9 +15,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import cmsc436.rpg.healcity.MainActivity
-import cmsc436.rpg.healcity.R
-import cmsc436.rpg.healcity.FitnessTrackingActivity
+import cmsc436.rpg.healcity.*
+import org.jetbrains.anko.db.insert
 
 
 class MissionFragment : Fragment() {
@@ -85,7 +84,6 @@ class MissionFragment : Fragment() {
         // Don't destroy Fragment on reconfiguration
         retainInstance = true
 
-
     }
 
     private fun addNewMission(v : View) {
@@ -134,6 +132,23 @@ class MissionFragment : Fragment() {
                 steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
                 Log.i("STEPS", steps.toString())
             }
+        }
+    }
+
+    private fun recordSteps(steps: Int) {
+        val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+        val date = User.date
+
+        // 1 reward point for 100 steps?
+        val reward = steps / 100
+
+        context!!.database.use {
+            insert(DBHelper.TABLE_ACHIEVEMENT,
+                DBHelper.COL_NAME to "Did ${steps} steps for ${reward} experiences.",
+                DBHelper.COL_DATE to date)
+            val player = User.getPlayer(sharedPref)!!
+            User.addExp(player, reward)
+            User.updatePlayer(sharedPref, player)
         }
     }
 
