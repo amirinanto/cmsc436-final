@@ -2,11 +2,9 @@ package cmsc436.rpg.healcity.ui.missions
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,10 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import cmsc436.rpg.healcity.MainActivity
 import cmsc436.rpg.healcity.R
 import cmsc436.rpg.healcity.FitnessTrackingActivity
+import cmsc436.rpg.healcity.User
+import java.lang.Integer.parseInt
 
 
 class MissionFragment : Fragment() {
@@ -28,10 +27,9 @@ class MissionFragment : Fragment() {
     private lateinit var steps: Number
     private lateinit var mTitles: Array<String>
     private lateinit var mDesc: Array<String>
-    private lateinit var mProg: IntArray
+    private lateinit var mProg: DoubleArray
+    private lateinit var mLength: IntArray
     private lateinit var simpleAdapter: SimpleAdapter
-
-    var missions = ArrayList<Mission>()
 
     private val from = arrayOf("listview_title", "listview_description", "listview_progress")
     private val to = intArrayOf(
@@ -52,6 +50,7 @@ class MissionFragment : Fragment() {
         mTitles = MainActivity.missionTitles
         mDesc = MainActivity.missionDesc
         mProg = MainActivity.missionProg
+        mLength = MainActivity.missionLength
 
         val addMissionButton = root.findViewById(R.id.AddNewMissionButton) as Button
         addMissionButton.setOnClickListener{ view ->
@@ -67,7 +66,7 @@ class MissionFragment : Fragment() {
             val hm = HashMap<String, String>()
             hm["listview_title"] = mTitles[i]
             hm["listview_description"] = mDesc[i]
-            hm["listview_progress"] = mProg[i].toString() + "/1"
+            hm["listview_progress"] = mProg[i].toString() + "/" + mLength[i].toString()
             aList.add(hm)
         }
 
@@ -96,9 +95,10 @@ class MissionFragment : Fragment() {
             // Retrieve values
             val title = view.findViewById<EditText>(R.id.added_mission_title).text.toString()
             val type = view.findViewById<Spinner>(R.id.added_mission_type).selectedItem.toString()
-            val length = view.findViewById<Spinner>(R.id.added_mission_length).selectedItem.toString()
+            val length = parseInt(view.findViewById<Spinner>(R.id.added_mission_length).selectedItem.toString())
             val hm = HashMap<String, String>()
 
+            aList.clear()
             // Add to list
             hm["listview_title"] = title
             if (type == "Walk") {
@@ -106,15 +106,20 @@ class MissionFragment : Fragment() {
             } else {
                 hm["listview_description"] = "Check-In at $length locations"
             }
-            hm["listview_progress"] = "0/$length"
+            hm["listview_progress"] = "0.0/$length"
 
             //Store values for future
             MainActivity.missionTitles += title
             MainActivity.missionDesc += hm["listview_description"].toString()
-            MainActivity.missionProg += 0
+            MainActivity.missionProg += 0.0
+            MainActivity.missionLength += length
             simpleAdapter.notifyDataSetChanged()
 
-            aList.add(hm)
+            val fragment = fragmentManager!!.findFragmentById(R.id.nav_host_fragment)!!
+            val ft = fragmentManager?.beginTransaction()
+            ft?.detach(fragment)
+            ft?.attach(fragment)
+            ft?.commit()
 
         }
         dialog.setNegativeButton("Cancel") { d: DialogInterface, _: Int ->
@@ -124,15 +129,39 @@ class MissionFragment : Fragment() {
     }
 
     fun trackSteps(v: View) {
-        var intent = Intent(context!!, FitnessTrackingActivity::class.java)
+        val intent = Intent(context!!, FitnessTrackingActivity::class.java)
         startActivityForResult(intent, FITNESS_REQ_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FITNESS_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+                // Getting current user/steps
+                val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+                val player = User.getPlayer(sharedPref)
+                val currSteps = player!!.steps
+
                 steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
-                Log.i("STEPS", steps.toString())
+
+                val distance = (steps as Int - currSteps)/2000.0
+
+                aList.clear()
+                for (i in mTitles.indices) {
+                    if (mDesc[i].split(" ")[0] == "Walk") { // If it is a walking goal, then update
+                        if (MainActivity.missionProg[i] + distance >=  MainActivity.missionLength[i]) {
+                            // Mission completed
+                            MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
+                        } else {
+                            MainActivity.missionProg[i] += distance
+                            simpleAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                val fragment = fragmentManager!!.findFragmentById(R.id.nav_host_fragment)!!
+                val ft = fragmentManager?.beginTransaction()
+                ft?.detach(fragment)
+                ft?.attach(fragment)
+                ft?.commit()
             }
         }
     }

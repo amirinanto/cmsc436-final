@@ -11,6 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import androidx.fragment.app.Fragment
 import androidx.core.app.ActivityCompat
 import cmsc436.rpg.healcity.ui.map.MapFragment
 import com.google.gson.Gson
@@ -100,7 +101,8 @@ class MainActivity : AppCompatActivity() {
 
         var missionTitles = arrayOf("Walking Goal", "Check-In Goal")
         var missionDesc = arrayOf("Walk 1 mile", "Check-In at 1 location")
-        var missionProg = intArrayOf(0, 0)
+        var missionProg = doubleArrayOf(0.0, 0.0)
+        var missionLength = intArrayOf(1, 1)
     }
 
 }
