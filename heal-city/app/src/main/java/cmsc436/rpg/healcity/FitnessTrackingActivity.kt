@@ -99,7 +99,7 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         if (abort == 1) {
             setResult(Activity.RESULT_CANCELED)
         } else {
-            val steps = parseInt(steps_value.text.toString().dropLast(2))
+            val steps = parseInt(steps_value.text.toString())
             if (steps > 0) {
                 result.putExtra(MainActivity.STEP_KEY, steps)
                 setResult(Activity.RESULT_OK, result)

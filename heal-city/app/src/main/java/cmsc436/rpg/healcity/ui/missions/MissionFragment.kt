@@ -145,7 +145,7 @@ class MissionFragment : Fragment() {
 
                 steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
 
-                val distance = (steps as Int - currSteps)/2000.0
+                val distance = (steps as Int)/2000.0
 
                 aList.clear()
                 for (i in mTitles.indices) {
