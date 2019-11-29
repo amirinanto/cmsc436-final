@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import cmsc436.rpg.healcity.ui.map.MapFragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
 
 
@@ -55,6 +56,13 @@ class MainActivity : AppCompatActivity() {
 
         setUpPermission()
 
+        getPlayerInfo()
+    }
+
+    private fun getPlayerInfo() {
+        val (name, level) = User.getNameLevel(applicationContext)
+        player_name_top.text = name
+        player_level_top.text = level.toString()
     }
 
     /**

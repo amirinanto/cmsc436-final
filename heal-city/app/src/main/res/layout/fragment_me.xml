@@ -9,13 +9,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:padding="@dimen/big_gap">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/identity_card"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/big_gap"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -28,8 +29,8 @@
                     android:id="@+id/textView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_gap"
-                    android:text="@string/stat_exp"
+                    android:layout_marginTop="@dimen/small_gap"
+                    android:text="@string/places_visited"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
@@ -38,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/big_gap"
-                    android:layout_marginTop="@dimen/big_gap"
+                    android:layout_marginTop="@dimen/small_gap"
                     android:text="@string/default_zero"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/textView16"
@@ -49,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/big_gap"
-                    android:layout_marginTop="@dimen/big_gap"
+                    android:layout_marginTop="@dimen/small_gap"
                     android:text="@string/default_zero"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/step_today_text"
@@ -60,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/medium_gap"
-                    android:layout_marginTop="@dimen/big_gap"
+                    android:layout_marginTop="@dimen/small_gap"
                     android:text="@string/total"
                     app:layout_constraintStart_toEndOf="@id/step_total_info"
                     app:layout_constraintTop_toBottomOf="@+id/exp_info" />
@@ -98,7 +99,7 @@
                     android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_gap"
+                    android:layout_marginTop="@dimen/small_gap"
                     android:text="@string/stat_steps"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -115,8 +116,8 @@
                     android:id="@+id/step_today_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/big_gap"
-                    android:layout_marginTop="@dimen/big_gap"
+                    android:layout_marginStart="@dimen/small_gap"
+                    android:layout_marginTop="@dimen/small_gap"
                     android:text="@string/default_zero"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/textView6"
@@ -127,7 +128,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/medium_gap"
-                    android:layout_marginTop="@dimen/big_gap"
+                    android:layout_marginTop="@dimen/small_gap"
                     android:text="@string/today"
                     app:layout_constraintStart_toEndOf="@+id/step_today_info"
                     app:layout_constraintTop_toBottomOf="@+id/exp_info" />
@@ -176,9 +177,10 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/achievement_card"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="@dimen/big_gap"
+            android:layout_marginTop="@dimen/big_gap"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/identity_card">
 

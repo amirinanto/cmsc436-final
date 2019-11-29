@@ -9,19 +9,24 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
 import kotlinx.android.synthetic.main.activity_tracking.*
 import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.toast
+import java.lang.Integer.max
 import java.lang.Integer.parseInt
+
 
 class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(), SensorEventListener{
 
     var doubleBackPressed = false
     var isTrackable = true
     var sensorManager: SensorManager? = null
+    private var stepCounter = 0
+    private var counterSteps = 0
+    private var stepDetector = 0
 
     // https://medium.com/@ssaurel/create-a-step-counter-fitness-app-for-android-with-kotlin-bbfb6ffe3ea7
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +50,9 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         stop_button.setOnClickListener {
             saveData()
         }
+
+//        Log.d(MainActivity.TAG, "step detector: ${true}" +
+//        ", step counter: ${packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)}")
     }
 
     override fun onResume() {
@@ -71,10 +79,10 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
 
     private fun startTracking() {
         isRunning = true
-        var stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        var stepDetector = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
 
-        if (stepSensor != null) {
-            sensorManager?.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI)
+        if (stepDetector != null) {
+            sensorManager?.registerListener(this, stepDetector, SensorManager.SENSOR_DELAY_UI)
         } else {
             Toast.makeText(this, "No Step Counter Sensor!", Toast.LENGTH_SHORT).show()
             saveData(1)
@@ -96,7 +104,8 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
                 result.putExtra(MainActivity.STEP_KEY, steps)
                 setResult(Activity.RESULT_OK, result)
 
-                val reward = steps / 100
+                var reward = kotlin.math.max(steps / 100, 1)
+
                 if (!addSteps(steps, reward))
                     toast("Player has not been initialized, please go to welcome screen.")
             }
@@ -123,11 +132,18 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         return true
     }
 
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
+    override fun onAccuracyChanged(p0: Sensor, p1: Int) {}
 
-    override fun onSensorChanged(event: SensorEvent?) {
+    override fun onSensorChanged(event: SensorEvent) {
         if (isRunning) {
-            steps_value.text = event?.values?.get(0).toString()
+            Log.i(MainActivity.TAG, "step detected: ${event.toString()}")
+
+            when (event.sensor.type) {
+                Sensor.TYPE_STEP_DETECTOR ->
+                    stepCounter++
+            }
+
+            steps_value.text = stepCounter.toString()
         }
     }
 

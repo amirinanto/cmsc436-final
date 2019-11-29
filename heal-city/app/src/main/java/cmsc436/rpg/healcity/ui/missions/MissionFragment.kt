@@ -17,6 +17,9 @@ import cmsc436.rpg.healcity.R
 import cmsc436.rpg.healcity.FitnessTrackingActivity
 import cmsc436.rpg.healcity.User
 import java.lang.Integer.parseInt
+import androidx.lifecycle.ViewModelProviders
+import cmsc436.rpg.healcity.*
+import org.jetbrains.anko.db.insert
 
 
 class MissionFragment : Fragment() {
@@ -83,7 +86,6 @@ class MissionFragment : Fragment() {
 
         // Don't destroy Fragment on reconfiguration
         retainInstance = true
-
 
     }
 

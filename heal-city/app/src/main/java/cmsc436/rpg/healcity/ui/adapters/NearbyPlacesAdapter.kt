@@ -23,7 +23,7 @@ class NearbyPlacesAdapter(val places : List<NearbyPlace>, val onClick: (NearbyPl
             with (itemView) {
                 place_name.text = place.name
                 place_reward.text = place.reward_exp.toString()
-                place_distance.text = place.distance.toString()
+                place_distance.text = "%.2f".format(place.distance.toString())
                 place_checked.setOnClickListener { onClick(place) }
             }
         }

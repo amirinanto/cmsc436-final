@@ -31,6 +31,7 @@
     <string name="point">Points</string>
     <string name="checked_in">Checked In?</string>
     <string name="go_to_setting">Go to app setting</string>
+    <string name="level">Level</string>
 
     <string name="nearby">Nearby Places</string>
     <string name="no_location_permission">This app need location permission\n\nClick button below to enter setting\n and enable location permission</string>
