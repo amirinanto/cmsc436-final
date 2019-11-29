@@ -135,23 +135,6 @@ class MissionFragment : Fragment() {
         }
     }
 
-    private fun recordSteps(steps: Int) {
-        val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
-        val date = User.date
-
-        // 1 reward point for 100 steps?
-        val reward = steps / 100
-
-        context!!.database.use {
-            insert(DBHelper.TABLE_ACHIEVEMENT,
-                DBHelper.COL_NAME to "Did ${steps} steps for ${reward} experiences.",
-                DBHelper.COL_DATE to date)
-            val player = User.getPlayer(sharedPref)!!
-            User.addExp(player, reward)
-            User.updatePlayer(sharedPref, player)
-        }
-    }
-
     companion object {
         private const val LAT_KEY = "USER_LAT"
         private const val LNG_KEY = "USER_LNG"

@@ -1,10 +1,17 @@
 package cmsc436.rpg.healcity
 
+import android.content.Context
 import android.content.SharedPreferences
 import cmsc436.rpg.healcity.ui.map.NearbyPlace
 import cmsc436.rpg.healcity.ui.me.Achievement
 import java.text.SimpleDateFormat
 import java.util.*
+
+data class Player(val name: String,
+                  var target: Int,
+                  var level: Int = 1,
+                  var exp: Int = 0,
+                  var steps: Int = 0)
 
 object User {
 
@@ -13,6 +20,8 @@ object User {
     const val PLAYER_EXP_KEY = "player_exp"
     const val PLAYER_STEPS_KEY = "player_steps"
     const val PLAYER_TARGET_STEPS = "player_target_step"
+
+    const val LEVEL_EXP_REQ = 10
 
     fun initPlayer(sharedPref: SharedPreferences, name: String, target: Int) {
         with (sharedPref.edit()) {
@@ -56,7 +65,7 @@ object User {
 
     fun addExp(player: Player, reward: Int) {
         with (player) {
-            val nextLevel = level * 5
+            val nextLevel = level * LEVEL_EXP_REQ
             val exp = exp + reward
             if (exp >= nextLevel) {
                 level += 1
@@ -64,14 +73,20 @@ object User {
         }
     }
 
+    fun getNameLevel(context: Context): Pair<String, Int> {
+        var info = Pair<String, Int>("NO_NAME_SPECIFIED", -1)
+        with(context.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)) {
+            info = Pair(getString(PLAYER_NAME_KEY, "")!!, getInt(PLAYER_LEVEL_KEY, -1)!!)
+        }
+        return info
+    }
+
+    fun nextLevel(exp: Int): Int
+            = exp + (LEVEL_EXP_REQ - exp % LEVEL_EXP_REQ)
+
+
     val date: String
         get() =
-            SimpleDateFormat("dd/mm/yyyy", Locale.getDefault())
+            SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
                 .format(Date()).toString()
 }
-
-data class Player(val name: String,
-                  var target: Int,
-                  var level: Int = 1,
-                  var exp: Int = 0,
-                  var steps: Int = 0)
