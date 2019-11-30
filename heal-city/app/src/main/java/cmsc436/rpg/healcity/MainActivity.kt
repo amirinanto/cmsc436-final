@@ -18,17 +18,17 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
+import android.content.Intent;
 
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var sharedPref: SharedPreferences
     lateinit var db: DBHelper
+    var context:Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // remove title bar and make screen full screen.
-        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         super.onCreate(savedInstanceState)
 
@@ -57,6 +57,10 @@ class MainActivity : AppCompatActivity() {
         setUpPermission()
 
         getPlayerInfo()
+
+        //var intent = Intent(context!!, WelcomeActivity::class.java)
+        //startActivity(intent)
+
     }
 
 

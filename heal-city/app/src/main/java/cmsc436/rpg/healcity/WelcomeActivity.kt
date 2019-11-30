@@ -1,8 +1,10 @@
 package cmsc436.rpg.healcity
 
 import android.content.Intent
+import android.graphics.drawable.DrawableContainer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -11,6 +13,7 @@ import cmsc436.rpg.healcity.ui.tutorial.IntroFragment1
 import cmsc436.rpg.healcity.ui.tutorial.IntroFragment2
 import cmsc436.rpg.healcity.ui.tutorial.IntroFragment3
 import com.github.paolorotolo.appintro.AppIntro
+import android.content.Context
 
 
 //create the first or Home activity of our app
@@ -22,7 +25,6 @@ class WelcomeActivity : AppCompatActivity() {
     private var viewPager: ViewPager? = null
     private var pages: IntArray? = null
     private var prefHelper: PreferenceHelper? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

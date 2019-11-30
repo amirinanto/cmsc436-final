@@ -51,14 +51,10 @@
     <string name="tutorial_next_button">NEXT</string>
     <string name="tutorial_skip_button">SKIP</string>
     <string name="welcome_text">Welcome to Heal City!</string>
-    <string name="page_one_title">How to Begin!</string>
-    <string name="page_one_descrip">First create and customize your character as you wish!</string>
-    <string name ="welcome_descrip">Heal City is a game that encourages you to be physically active while incorporating a rewarding experience. Enjoy!</string>
-    <string name="page_two_title">Title</string>
-    <string name="page_two_descrip">Descrip</string>
-    <string name="page_three_title">Title</string>
-    <string name="page_three_descrip">Descrip</string>
-
+    <string name="welcome_descrip">Heal City is a game that encourages you to be physically active while incorporating a rewarding experience. Enjoy!</string>
+    <string name="page_one_descrip">This is the Me Tab. Here is where you\'ll see your Statistics, Goals, and Achievements throughout your journey.</string>
+    <string name="page_two_descrip">This is the Missions Tab. From here you can add your personal mission or simply just start walking! Your goal, location and distance will be recorded here.</string>
+    <string name="page_three_descrip">This is the Map Tab. Here is where you\'ll see your location and directions.</string>
 
     <string-array name="mission_type">
         <item>Walk</item>

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import cmsc436.rpg.healcity.R
 
 
+
 class IntroFragment2 : Fragment() {
 
 
