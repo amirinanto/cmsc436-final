@@ -8,11 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import cmsc436.rpg.healcity.MainActivity
-import cmsc436.rpg.healcity.R
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_me.*
+
+import android.content.Intent;
+
+import android.util.Log
+import cmsc436.rpg.healcity.*
+import cmsc436.rpg.healcity.ui.adapters.AchievementsAdapter
+import org.jetbrains.anko.db.*
+
 
 
 class MeFragment : Fragment() {
@@ -22,16 +26,9 @@ class MeFragment : Fragment() {
 
     private lateinit var sharedPref: SharedPreferences
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+            = inflater.inflate(R.layout.fragment_me, container, false)
 
-        //var intent = Intent(context!!, TutorialFunctions::class.java)
-        //startActivity(intent)
-
-        return inflater.inflate(R.layout.fragment_me, container, false)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,41 +41,76 @@ class MeFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        sharedPref = activity!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+        sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
 
         //dummy list
         //for (i in 1..100) achievementList.add(Achievement("Achivement ${i}"))
 
-        adapter = AchievementsAdapter(achievementList)
+//        loadDummyAchievements()
+        loadAchievements()
+
+        adapter =
+            AchievementsAdapter(achievementList)
         achievement_list.layoutManager = LinearLayoutManager(context)
         achievement_list.adapter = adapter
 
-        loadAchievements()
+        loadPlayerInfo()
     }
 
-    private fun loadAchievements() {
-        with (sharedPref) {
-            if (contains(ACHIEVEMENT_KEY)) {
-                val json = getString(ACHIEVEMENT_KEY, null)
-                if (json != null)
-                    updateAchievementList(Gson().fromJson<ArrayList<Achievement>>(json))
+    private fun loadPlayerInfo() {
+        val player = User.getPlayer(sharedPref)
+        if (player == null) {
+
+        } else {
+            val exp = player.exp
+            exp_info.text = "${exp} / ${User.nextLevel(exp)}"
+
+            step_total_info.text = player.steps.toString()
+
+            val checkInCount = context!!.database.use {
+                query(DBHelper.TABLE_CIN, arrayOf("*"),
+                    null, null, null, null, null, null)
+                    .count
             }
+            places_visited_info.text = checkInCount.toString()
         }
     }
 
-    private fun updateAchievementList(newList: ArrayList<Achievement>) {
-        achievementList = newList
-        adapter.refresh()
+    private fun loadAchievements() {
+        achievementList.clear()
+        context!!.database.use {
+            select(DBHelper.TABLE_ACHIEVEMENT).orderBy(DBHelper.COL_DEF_ID, SqlOrderDirection.DESC).exec {
+                parseList(object : MapRowParser<List<Achievement>> {
+                    override fun parseRow(columns: Map<String, Any?>): List<Achievement> {
+                        val name = columns.getValue(DBHelper.COL_NAME)
+                        val date = columns.getValue(DBHelper.COL_DATE)
+
+                        val achievement = Achievement(name.toString(), date.toString())
+                        achievementList.add(achievement)
+                        Log.i(MainActivity.TAG, "parsed: ${achievement}")
+
+                        return achievementList
+                    }
+                })
+            }
+        }
+        if (achievementList.isEmpty()) {
+            no_achievement_warning.visibility = View.VISIBLE
+        }
     }
 
-    /**
-     * https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
-     */
-    inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
-
-
-    companion object {
-        const val ACHIEVEMENT_KEY = "ACH_KEY"
+    private fun loadDummyAchievements() {
+        val dummyList = ArrayList<Achievement>()
+        val date = User.date
+        for (i in 1..100) {
+            dummyList.add(Achievement("achivement .. ${i}", date))
+        }
+        for (x in dummyList) {
+            context!!.database.use {
+                insert(DBHelper.TABLE_ACHIEVEMENT,
+                    DBHelper.COL_NAME to x.name,
+                    DBHelper.COL_DATE to x.date)
+            }
+        }
     }
-
 }

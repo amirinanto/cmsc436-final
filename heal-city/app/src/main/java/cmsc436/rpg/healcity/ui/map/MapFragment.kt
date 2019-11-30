@@ -3,10 +3,13 @@ package cmsc436.rpg.healcity.ui.map
 import NearbyPlacesAdapter
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -47,28 +50,8 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     private var nearbyPlacesList = ArrayList<NearbyPlace>()
     private lateinit var adapter: NearbyPlacesAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var root = inflater.inflate(R.layout.fragment_map, container, false)
-
-        //map start thingy
-        googleMap = childFragmentManager.findFragmentById(R.id.map_view) as SupportMapFragment
-        googleMap.getMapAsync(this)
-
-        //location api
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
-
-        //location callback
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
-                for (location in locationResult.locations){
-                    updateLocation(location)
-                }
-            }
-        }
-
-        return root
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+            = inflater.inflate(R.layout.fragment_map, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,17 +69,62 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        nearbyPlacesList = ArrayList()
-
-        adapter = NearbyPlacesAdapter(nearbyPlacesList) {
-            checkIn(it)
-            adapter.refresh()
+        setting_button.setOnClickListener {
+            val intent = Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", activity!!.packageName, null));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
-        listview_nearby.layoutManager = LinearLayoutManager(context!!)
-        listview_nearby.adapter = adapter
 
-        Places.initialize(context!!, resources.getString(R.string.google_maps_key))
-        placesClient = Places.createClient(context!!)
+        if (!checkLocationPermission) {
+
+            noLocationProvided()
+
+        }else {
+
+            setupMap()
+
+            nearbyPlacesList = ArrayList()
+
+            adapter = NearbyPlacesAdapter(nearbyPlacesList) {
+                checkIn(it)
+                adapter.refresh()
+            }
+            listview_nearby.layoutManager = LinearLayoutManager(context!!)
+            listview_nearby.adapter = adapter
+
+            Places.initialize(context!!, resources.getString(R.string.google_maps_key))
+            placesClient = Places.createClient(context!!)
+        }
+    }
+
+    /**
+     *
+     *
+     * @author Muchlas Amirinanto
+     */
+    private var checkLocationPermission = false
+        get()
+            = ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    private fun setupMap() {
+        //map start thingy
+        googleMap = childFragmentManager.findFragmentById(R.id.map_view) as SupportMapFragment
+        googleMap.getMapAsync(this)
+
+        //location api
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
+
+        //location callback
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    updateLocation(location)
+                }
+            }
+        }
     }
 
     /**
@@ -104,20 +132,21 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      */
     private fun checkIn(place: NearbyPlace) {
         context!!.database.use {
-
+            place.reward_exp
         }
     }
 
     /**
      * Start location update listener when app is resumed
-     * TODO
      *
      * @author Muchlas Amirinanto
      */
     override fun onResume() {
         super.onResume()
-        val locationRequest = LocationRequest()
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        if (checkLocationPermission) {
+            val locationRequest = LocationRequest()
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        }
     }
 
     /**
@@ -127,7 +156,8 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      */
     override fun onPause() {
         super.onPause()
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+        if (checkLocationPermission)
+            fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     /**
@@ -137,6 +167,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      * @author Muchlas Amirinanto
      */
     override fun onMapReady(gMap: GoogleMap) {
+        if (!checkLocationPermission)
+            return
+
         map = gMap
 
         //seting up map
@@ -147,9 +180,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         }
 
         loading_map.visibility = View.GONE
-
-        //request permission TODO
-        setUpPermission()
 
         if (ActivityCompat.checkSelfPermission(context!!,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -175,40 +205,12 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      * @author Muchlas Amirinanto
      */
     private fun noLocationProvided() {
-        map_warning.visibility = View.VISIBLE
+        loading_card.visibility = View.GONE
+        loading_map.visibility = View.GONE
         map_card.visibility = View.GONE
+
+        no_location_card.visibility = View.VISIBLE
     }
-
-    /**
-     * Requesting location permission for the app
-     * Should only be in the beginning ???
-     * TODO
-     *
-     * @author Muchlas Amirinanto
-     */
-    private fun setUpPermission() {
-        // Here, thisActivity is the current activity
-        if (ActivityCompat.checkSelfPermission(context!!,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // Should we show an explanation?
-            if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                // No explanation needed, we can request the permission.
-                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSION_REQUEST_CODE)
-
-            }
-        }
-    }
-
 
     /**
      * Saves last known user location into sharedPreference
@@ -290,7 +292,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val distance = FloatArray(2)
                         Location.distanceBetween(lastLocation!!.latitude, lastLocation!!.longitude, lat, lng, distance)
                         val id = place.id.toString()
-                        if (id != null && distance[0] != 0f)
+                        if (distance[0] != 0f)
                             addNearbyPlace(NearbyPlace(place.name!!, distance[0], id = id))
                     }
 
@@ -298,7 +300,10 @@ class MapFragment : Fragment(), OnMapReadyCallback{
 
                     if (nearbyPlacesList.isEmpty()) {
                         noNearbyPlaces()
+                    } else {
+                        nearby_list_card.visibility = View.VISIBLE
                     }
+
                 }.addOnFailureListener {
                     loading_card.visibility = View.GONE
                     noNearbyPlaces()
@@ -306,9 +311,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                 }
 
         } else {
-            // A local method to request required permissions;
-            setUpPermission()
-
+            noLocationProvided()
         }
 
     }
@@ -335,7 +338,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     }
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
         private const val LAT_KEY = "USER_LAT"
         private const val LNG_KEY = "USER_LNG"
