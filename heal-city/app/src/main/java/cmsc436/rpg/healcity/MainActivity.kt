@@ -47,7 +47,11 @@ class MainActivity : AppCompatActivity() {
         // Test player
         User.initPlayer(sharedPref, "Muchlas", 1000)
 
+
+
     }
+
+
 
     companion object {
         const val TAG = "HEAL-CITY"

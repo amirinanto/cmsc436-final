@@ -11,8 +11,6 @@ import kotlinx.android.synthetic.*
 //import android.R
 
 
-
-
 class IntroFragment1 : Fragment() {
 
     override fun onCreateView(

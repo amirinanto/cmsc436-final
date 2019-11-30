@@ -3,29 +3,30 @@ package cmsc436.rpg.healcity
 import android.content.Context
 import android.content.SharedPreferences
 
-// show app intro slider just for new users.
+// show tutorial just for new users.
 
-class PreferenceHelper(private val context: Context) {
+class PreferenceHelper(var context: Context) {
 
-    private val INTRO = "intro"
-    private val app_prefs: SharedPreferences
+    var pref:SharedPreferences
+    var editor:SharedPreferences.Editor
 
+    fun checkFirstLaunch():Boolean {
+            return pref.getBoolean(FIRST_LAUNCH, true)
+    }
+
+    fun setFirstLaunch(FirstLaunch:Boolean) {
+            editor.putBoolean(FIRST_LAUNCH, FirstLaunch)
+            editor.commit()
+    }
 
     init {
-        app_prefs = context.getSharedPreferences(
-            "shared",
-            Context.MODE_PRIVATE
-        )
+        pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE)
+        editor = pref.edit()
     }
 
-    fun putIntro(loginorout: String) {
-        val edit = app_prefs.edit()
-        edit.putString(INTRO, loginorout)
-        edit.commit()
-    }
-
-    fun getIntro(): String? {
-        return app_prefs.getString(INTRO, "")
-    }
-
+companion object{
+    private val FIRST_LAUNCH = "FirstLaunch"
+    private val PREF_NAME = "launch"
+    private var PRIVATE_MODE = 0
+}
 }
