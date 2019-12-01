@@ -134,6 +134,12 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      */
     private fun checkIn(position: Int) {
         val place = nearbyPlacesList[position]
+
+        if (place.distance > 20f) {
+            Toast.makeText(context!!, "Please move closer to ${place.name} and refresh the tab!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (isPlaceCheckedIn(place.id)) {
             Toast.makeText(context!!, "Already Checked In into ${place.name}!", Toast.LENGTH_SHORT).show()
             return
@@ -147,6 +153,13 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                 DBHelper.COL_DATE to "Checked In into ${place.name} for ${place.reward_exp} experience.",
                 DBHelper.COL_DATE to User.date)
         }
+
+        val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+        val player = User.getPlayer(sharedPref)!!
+        player.checkIn++
+        User.addExp(player, place.reward_exp)
+        User.updatePlayer(sharedPref, player)
+
     }
 
     private fun isPlaceCheckedIn(placeId: String): Boolean {

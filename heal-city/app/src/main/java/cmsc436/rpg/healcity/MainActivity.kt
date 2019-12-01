@@ -58,8 +58,11 @@ class MainActivity : AppCompatActivity() {
 
         getPlayerInfo()
 
-        //var intent = Intent(context!!, WelcomeActivity::class.java)
-        //startActivity(intent)
+        val preferenceHelper = PreferenceHelper(applicationContext)
+        if (!preferenceHelper.checkFirstLaunch()) {
+            var intent = Intent(context!!, WelcomeActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
