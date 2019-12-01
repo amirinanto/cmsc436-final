@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         val preferenceHelper = PreferenceHelper(applicationContext)
         if (!preferenceHelper.checkFirstLaunch()) {
-            var intent = Intent(context!!, WelcomeActivity::class.java)
+            var intent = Intent(applicationContext, WelcomeActivity::class.java)
             startActivity(intent)
         }
 
@@ -75,8 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Requesting location permission for the app
-     * Should only be in the beginning ???
-     * TODO
      *
      * @author Muchlas Amirinanto
      */
