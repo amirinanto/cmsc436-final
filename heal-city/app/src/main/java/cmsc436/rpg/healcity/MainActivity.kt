@@ -2,6 +2,7 @@ package cmsc436.rpg.healcity
 
 import android.Manifest
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,8 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
 import android.content.Intent;
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 
 
 class MainActivity : AppCompatActivity() {
@@ -59,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         getPlayerInfo()
 
         val preferenceHelper = PreferenceHelper(applicationContext)
-        if (!preferenceHelper.checkFirstLaunch()) {
+        if (preferenceHelper.checkFirstLaunch()) {
             var intent = Intent(applicationContext, WelcomeActivity::class.java)
             startActivity(intent)
         }
@@ -104,7 +107,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Exit")
+            .setMessage("Are you sure you want to exit?")
+            .setPositiveButton("Yes") {
+                    _, _ -> finish()}
+            .setNegativeButton("No") {
+                    _, _ ->  Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()}
+            .show()
+    }
 
     companion object {
         const val TAG = "HEAL-CITY"
