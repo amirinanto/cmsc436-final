@@ -31,12 +31,6 @@ class WelcomeActivity : AppCompatActivity() {
 
         prefHelper = PreferenceHelper(this)
 
-        //checking if its the first time the app is launching
-        if(!prefHelper!!.checkFirstLaunch()){
-            beginHomePage()
-            finish()
-        }
-
         //first page
         setContentView(R.layout.activity_welcome)
 
@@ -72,8 +66,7 @@ class WelcomeActivity : AppCompatActivity() {
 
     //skips tutorial and goes straight to main activity
     private fun beginHomePage(){
-       prefHelper!!.setFirstLaunch(false)
-        startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
+        prefHelper!!.setFirstLaunch(false)
         finish()
     }
 

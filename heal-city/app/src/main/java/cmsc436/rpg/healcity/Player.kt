@@ -89,7 +89,6 @@ object User {
     fun nextLevel(exp: Int): Int
             = exp + (LEVEL_EXP_REQ - exp % LEVEL_EXP_REQ)
 
-
     val date: String
         get() =
             SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())

@@ -1,7 +1,9 @@
 package cmsc436.rpg.healcity
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +21,8 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
 import android.content.Intent;
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,8 +32,6 @@ class MainActivity : AppCompatActivity() {
     var context:Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
@@ -51,18 +53,34 @@ class MainActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
 
         // Test player
-        User.initPlayer(sharedPref, "Muchlas", 1000)
+        //User.initPlayer(sharedPref, "Muchlas", 1000)
+
+        // initiate database
         db = DBHelper.getInstance(applicationContext)
 
         setUpPermission()
 
+        if (User.getPlayer(sharedPref) == null)
+            startActivityForResult(Intent(applicationContext,
+                CreateCharacterActivity::class.java),
+                CREATE_CHARACTER_CODE)
+
         getPlayerInfo()
 
-        //var intent = Intent(context!!, WelcomeActivity::class.java)
-        //startActivity(intent)
+        val preferenceHelper = PreferenceHelper(applicationContext)
+        if (preferenceHelper.checkFirstLaunch()) {
+            var intent = Intent(applicationContext, WelcomeActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CREATE_CHARACTER_CODE && resultCode == Activity.RESULT_OK) {
+            getPlayerInfo()
+        }
+    }
 
     private fun getPlayerInfo() {
         val (name, level) = User.getNameLevel(applicationContext)
@@ -72,8 +90,6 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Requesting location permission for the app
-     * Should only be in the beginning ???
-     * TODO
      *
      * @author Muchlas Amirinanto
      */
@@ -103,14 +119,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Exit")
+            .setMessage("Are you sure you want to exit?")
+            .setPositiveButton("Yes") {
+                    _, _ -> finish()}
+            .setNegativeButton("No") {
+                    _, _ ->  Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()}
+            .show()
+        return
+    }
 
     companion object {
         const val TAG = "HEAL-CITY"
         const val PREF_FILE = "heal_city_pref"
 
         const val STEP_KEY = "steps"
-        const val LOCATION_PERMIT = "locationallowed"
+
+        const val CREATE_CHARACTER_CODE = 0
+
+
 
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 

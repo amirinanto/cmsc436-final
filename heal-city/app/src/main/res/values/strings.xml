@@ -19,7 +19,7 @@
 
     <string name="player_stat">Player Statistics</string>
     <string name="achievement">Player Achievement</string>
-    <string name="target_goal">Target Goal:</string>
+    <string name="target_goal">Target Goals:</string>
     <string name="no_achievement">No achivement yet.\nGo to <B>Mission</B> tab to get started.</string>
     <string name="today">Today</string>
     <string name="total">Total</string>
@@ -47,7 +47,6 @@
     <string name="default_zero">0</string>
     <string name="start_walking">Start Walking!</string>
 
-
     <string name="tutorial_next_button">NEXT</string>
     <string name="tutorial_skip_button">SKIP</string>
     <string name="welcome_text">Welcome to Heal City!</string>
@@ -68,5 +67,9 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+
+    <string name="title_activity_create_player">Create Player</string>
+    <string name="button_create">Create</string>
+    <string name="create_tutorial_text">Let\'s start by creating your character.\n\nThe name you choose will be your player name for this game.\n\nTarget goals are the number of steps you are aiming to achieve.</string>
 
 </resources>
