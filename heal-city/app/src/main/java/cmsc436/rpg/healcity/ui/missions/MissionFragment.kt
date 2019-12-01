@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ class MissionFragment : Fragment() {
     private lateinit var mProg: ArrayList<Double>
     private lateinit var mLength: ArrayList<Int>
     private lateinit var simpleAdapter: SimpleAdapter
+    private var checkedInNum = 0
 
     private val from = arrayOf("listview_title", "listview_description", "listview_progress")
     private val to = intArrayOf(
@@ -44,22 +46,31 @@ class MissionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_missions, container, false)
+        val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+        val user = User.getPlayer(sharedPref)!!
+        if (user.checkIn > checkedInNum) updateCheckInMissions(user.checkIn)
+
+        Log.i("CHECK IN:", "${user.checkIn} $checkedInNum")
+
 
         mTitles = MainActivity.missionTitles
         mDesc = MainActivity.missionDesc
         mProg = MainActivity.missionProg
         mLength = MainActivity.missionLength
 
+        // Adding and setting up add a new mission
         val addMissionButton = root.findViewById(R.id.AddNewMissionButton) as Button
         addMissionButton.setOnClickListener{
             addNewMission()
         }
 
+        // Adding and setting up start walking
         val startWalkingButton = root.findViewById(R.id.StartWalking) as Button
         startWalkingButton.setOnClickListener {
             trackSteps()
         }
 
+        // Adding and setting up list view items
         for (i in mTitles.indices) {
             val hm = HashMap<String, String>()
             hm["listview_title"] = mTitles[i]
@@ -75,6 +86,7 @@ class MissionFragment : Fragment() {
 
         return root
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +109,7 @@ class MissionFragment : Fragment() {
             val hm = HashMap<String, String>()
 
             aList.clear()
+
             // Add to list
             hm["listview_title"] = title
             if (type == "Walk") {
@@ -113,6 +126,7 @@ class MissionFragment : Fragment() {
             MainActivity.missionLength.add(length)
             simpleAdapter.notifyDataSetChanged()
 
+            // Update fragment
             val fragment = fragmentManager!!.findFragmentById(R.id.nav_host_fragment)!!
             val ft = fragmentManager?.beginTransaction()
             ft?.detach(fragment)
@@ -126,24 +140,30 @@ class MissionFragment : Fragment() {
         dialog.show()
     }
 
+    // Start the Fitness Tracking Activity
     private fun trackSteps() {
         val intent = Intent(context!!, FitnessTrackingActivity::class.java)
         startActivityForResult(intent, FITNESS_REQ_CODE)
     }
 
+    // Parse the results and update any missions
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FITNESS_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK){
 
+                // Array of missions that have been completed
                 val toRemove = arrayListOf<Int>()
 
+                // Steps returned from the Walking Activity
                 steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
-
-                val distance = (steps as Int)/2.0 // TODO: 2000.0
+                val distance = (steps as Int)/2000.0 // Steps converted to miles
 
                 aList.clear()
+
+                // Check if any missions have been completed
                 for (i in MainActivity.missionTitles.indices) {
-                    if (MainActivity.missionDesc[i].split(" ")[0] == "Walk") { // If it is a walking goal, then update
+                    if (MainActivity.missionDesc[i].split(" ")[0] == "Walk") {
+                        // If it is a walking goal, then update
                         if (MainActivity.missionProg[i] + distance >=  MainActivity.missionLength[i]) {
                             // Mission completed
                             MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
@@ -177,6 +197,36 @@ class MissionFragment : Fragment() {
             MainActivity.missionProg.removeAt(i)
             simpleAdapter.notifyDataSetChanged()
         }
+    }
+
+    private fun updateCheckInMissions(userChecks: Int) {
+        val toRemove = arrayListOf<Int>()
+        for (i in MainActivity.missionTitles.indices) {
+            if (MainActivity.missionDesc[i].split(" ")[0] == "Check-In") {
+                if (MainActivity.missionProg[i] + userChecks-checkedInNum >= MainActivity.missionLength[i]) {
+                    // Mission completed
+                    MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
+                    val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+                    val user = User.getPlayer(sharedPref)!!
+                    val reward = MainActivity.missionLength[i]*10
+                    User.addExp(user, reward)
+                    toRemove.add(i)
+                    Toast.makeText(context!!, "You completed a mission for $reward exp!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Update current progress
+                    MainActivity.missionProg[i] += userChecks*1.0
+                    simpleAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+        removeMission(toRemove.reversed())
+        val fragment = fragmentManager!!.findFragmentById(R.id.nav_host_fragment)!!
+        val ft = fragmentManager?.beginTransaction()
+        ft?.detach(fragment)
+        ft?.attach(fragment)
+        ft?.commit()
+        checkedInNum = userChecks
+        // TODO: JUST NEED USER CHECK IN UPDATED IN USER CLASS
     }
 
     companion object {
