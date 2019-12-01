@@ -22,7 +22,12 @@
             <ListView
                 android:id="@+id/mission_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:scrollbarSize="3dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
+                android:scrollingCache="true"
+                android:smoothScrollbar="true"/>
 
             <Button
                 android:layout_width="match_parent"

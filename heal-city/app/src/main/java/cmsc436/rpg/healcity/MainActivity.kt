@@ -117,10 +117,10 @@ class MainActivity : AppCompatActivity() {
 
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
-        var missionTitles = arrayOf("Walking Goal", "Check-In Goal")
-        var missionDesc = arrayOf("Walk 1 mile", "Check-In at 1 location")
-        var missionProg = doubleArrayOf(0.0, 0.0)
-        var missionLength = intArrayOf(1, 1)
+        var missionTitles = arrayListOf("Walking Goal", "Check-In Goal")
+        var missionDesc = arrayListOf("Walk 1 mile", "Check-In at 1 location")
+        var missionProg = arrayListOf(0.0, 0.0)
+        var missionLength = arrayListOf(1, 1)
     }
 
 }

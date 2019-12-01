@@ -1,12 +1,12 @@
 package cmsc436.rpg.healcity.ui.missions
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,21 +17,16 @@ import cmsc436.rpg.healcity.R
 import cmsc436.rpg.healcity.FitnessTrackingActivity
 import cmsc436.rpg.healcity.User
 import java.lang.Integer.parseInt
-import androidx.lifecycle.ViewModelProviders
-import cmsc436.rpg.healcity.*
-import org.jetbrains.anko.db.insert
 
 
 class MissionFragment : Fragment() {
 
     private lateinit var mListView: ListView
-    private lateinit var missionList: ListView
-    private lateinit var mListAdapter: ListAdapter
     private lateinit var steps: Number
-    private lateinit var mTitles: Array<String>
-    private lateinit var mDesc: Array<String>
-    private lateinit var mProg: DoubleArray
-    private lateinit var mLength: IntArray
+    private lateinit var mTitles: ArrayList<String>
+    private lateinit var mDesc: ArrayList<String>
+    private lateinit var mProg: ArrayList<Double>
+    private lateinit var mLength: ArrayList<Int>
     private lateinit var simpleAdapter: SimpleAdapter
 
     private val from = arrayOf("listview_title", "listview_description", "listview_progress")
@@ -56,13 +51,13 @@ class MissionFragment : Fragment() {
         mLength = MainActivity.missionLength
 
         val addMissionButton = root.findViewById(R.id.AddNewMissionButton) as Button
-        addMissionButton.setOnClickListener{ view ->
-            addNewMission(view)
+        addMissionButton.setOnClickListener{
+            addNewMission()
         }
 
         val startWalkingButton = root.findViewById(R.id.StartWalking) as Button
-        startWalkingButton.setOnClickListener { view ->
-            trackSteps(view)
+        startWalkingButton.setOnClickListener {
+            trackSteps()
         }
 
         for (i in mTitles.indices) {
@@ -89,7 +84,8 @@ class MissionFragment : Fragment() {
 
     }
 
-    private fun addNewMission(v : View) {
+    @SuppressLint("InflateParams")
+    private fun addNewMission() {
         val view = layoutInflater.inflate(R.layout.add_mission_dialog, null)
         val dialog = AlertDialog.Builder(context!!)
         dialog.setView(view)
@@ -111,10 +107,10 @@ class MissionFragment : Fragment() {
             hm["listview_progress"] = "0.0/$length"
 
             //Store values for future
-            MainActivity.missionTitles += title
-            MainActivity.missionDesc += hm["listview_description"].toString()
-            MainActivity.missionProg += 0.0
-            MainActivity.missionLength += length
+            MainActivity.missionTitles.add(title)
+            MainActivity.missionDesc.add(hm["listview_description"].toString())
+            MainActivity.missionProg.add(0.0)
+            MainActivity.missionLength.add(length)
             simpleAdapter.notifyDataSetChanged()
 
             val fragment = fragmentManager!!.findFragmentById(R.id.nav_host_fragment)!!
@@ -130,35 +126,40 @@ class MissionFragment : Fragment() {
         dialog.show()
     }
 
-    fun trackSteps(v: View) {
+    private fun trackSteps() {
         val intent = Intent(context!!, FitnessTrackingActivity::class.java)
         startActivityForResult(intent, FITNESS_REQ_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FITNESS_REQ_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                // Getting current user/steps
-                val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
-                val player = User.getPlayer(sharedPref)
-                val currSteps = player!!.steps
+            if (resultCode == Activity.RESULT_OK){
+
+                val toRemove = arrayListOf<Int>()
 
                 steps = data?.getIntExtra(MainActivity.STEP_KEY, 0)!!
 
-                val distance = (steps as Int)/2000.0
+                val distance = (steps as Int)/2.0 // TODO: 2000.0
 
                 aList.clear()
-                for (i in mTitles.indices) {
-                    if (mDesc[i].split(" ")[0] == "Walk") { // If it is a walking goal, then update
+                for (i in MainActivity.missionTitles.indices) {
+                    if (MainActivity.missionDesc[i].split(" ")[0] == "Walk") { // If it is a walking goal, then update
                         if (MainActivity.missionProg[i] + distance >=  MainActivity.missionLength[i]) {
                             // Mission completed
                             MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
+                            val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+                            val user = User.getPlayer(sharedPref)!!
+                            val reward = MainActivity.missionLength[i]*10
+                            User.addExp(user, reward)
+                            toRemove.add(i)
+                            Toast.makeText(context!!, "You completed a mission for $reward exp!", Toast.LENGTH_SHORT).show()
                         } else {
                             MainActivity.missionProg[i] += distance
                             simpleAdapter.notifyDataSetChanged()
                         }
                     }
                 }
+                removeMission(toRemove.reversed())
                 val fragment = fragmentManager!!.findFragmentById(R.id.nav_host_fragment)!!
                 val ft = fragmentManager?.beginTransaction()
                 ft?.detach(fragment)
@@ -168,10 +169,17 @@ class MissionFragment : Fragment() {
         }
     }
 
+    private fun removeMission(indexes: List<Int>) {
+        for (i in indexes) {
+            MainActivity.missionTitles.removeAt(i)
+            MainActivity.missionDesc.removeAt(i)
+            MainActivity.missionLength.removeAt(i)
+            MainActivity.missionProg.removeAt(i)
+            simpleAdapter.notifyDataSetChanged()
+        }
+    }
+
     companion object {
-        private const val LAT_KEY = "USER_LAT"
-        private const val LNG_KEY = "USER_LNG"
-        private const val TIME_KEY = "USER_TIME"
         private const val FITNESS_REQ_CODE = 1
     }
 
