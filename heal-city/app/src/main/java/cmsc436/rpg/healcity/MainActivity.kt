@@ -1,6 +1,7 @@
 package cmsc436.rpg.healcity
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
@@ -31,8 +32,6 @@ class MainActivity : AppCompatActivity() {
     var context:Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
@@ -54,10 +53,17 @@ class MainActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
 
         // Test player
-        User.initPlayer(sharedPref, "Muchlas", 1000)
+        //User.initPlayer(sharedPref, "Muchlas", 1000)
+
+        // initiate database
         db = DBHelper.getInstance(applicationContext)
 
         setUpPermission()
+
+        if (User.getPlayer(sharedPref) == null)
+            startActivityForResult(Intent(applicationContext,
+                CreateCharacterActivity::class.java),
+                CREATE_CHARACTER_CODE)
 
         getPlayerInfo()
 
@@ -69,6 +75,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CREATE_CHARACTER_CODE && resultCode == Activity.RESULT_OK) {
+            getPlayerInfo()
+        }
+    }
 
     private fun getPlayerInfo() {
         val (name, level) = User.getNameLevel(applicationContext)
@@ -116,6 +128,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("No") {
                     _, _ ->  Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()}
             .show()
+        return
     }
 
     companion object {
@@ -123,7 +136,10 @@ class MainActivity : AppCompatActivity() {
         const val PREF_FILE = "heal_city_pref"
 
         const val STEP_KEY = "steps"
-        const val LOCATION_PERMIT = "locationallowed"
+
+        const val CREATE_CHARACTER_CODE = 0
+
+
 
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 

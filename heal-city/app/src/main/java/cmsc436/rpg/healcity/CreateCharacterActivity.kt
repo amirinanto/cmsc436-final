@@ -1,6 +1,8 @@
 package cmsc436.rpg.healcity
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -12,6 +14,13 @@ class CreateCharacterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_character)
+
+        val sharedPref = this.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
+
+        if (sharedPref.contains(User.PLAYER_NAME_KEY)) {
+            finish()
+            return
+        }
 
         create_button.setOnClickListener {
             val name = name_edit.text
@@ -26,8 +35,11 @@ class CreateCharacterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            User.initPlayer(this.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE),
+            User.initPlayer(sharedPref,
                 name.toString(), parseInt(target.toString()))
+
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
