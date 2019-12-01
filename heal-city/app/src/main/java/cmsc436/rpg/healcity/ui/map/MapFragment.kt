@@ -9,18 +9,19 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.provider.BaseColumns
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import cmsc436.rpg.healcity.MainActivity
+import cmsc436.rpg.healcity.*
 import cmsc436.rpg.healcity.R
-import cmsc436.rpg.healcity.database
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,6 +35,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.android.synthetic.main.fragment_map.*
+import org.jetbrains.anko.db.*
 
 class MapFragment : Fragment(), OnMapReadyCallback{
 
@@ -106,7 +108,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      */
     private var checkLocationPermission = false
         get()
-            = ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        = ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private fun setupMap() {
         //map start thingy
@@ -130,10 +132,34 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     /**
      * TODO
      */
-    private fun checkIn(place: NearbyPlace) {
-        context!!.database.use {
-            place.reward_exp
+    private fun checkIn(position: Int) {
+        val place = nearbyPlacesList[position]
+        if (isPlaceCheckedIn(place.id)) {
+            Toast.makeText(context!!, "Already Checked In into ${place.name}!", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        context!!.database.use {
+            insert(DBHelper.TABLE_CIN,
+                DBHelper.COL_ID to place.id,
+                DBHelper.COL_DATE to User.date)
+            insert(DBHelper.TABLE_ACHIEVEMENT,
+                DBHelper.COL_DATE to "Checked In into ${place.name} for ${place.reward_exp} experience.",
+                DBHelper.COL_DATE to User.date)
+        }
+    }
+
+    private fun isPlaceCheckedIn(placeId: String): Boolean {
+        var exist = false
+        context!!.database.use {
+            val count = select(DBHelper.TABLE_CIN, DBHelper.COL_ID)
+                .whereSimple("(${DBHelper.COL_ID}) = ?", placeId)
+                .parseList(StringParser)
+                .count()
+            if (count > 0)
+                exist = true
+        }
+        return exist
     }
 
     /**
@@ -292,8 +318,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val distance = FloatArray(2)
                         Location.distanceBetween(lastLocation!!.latitude, lastLocation!!.longitude, lat, lng, distance)
                         val id = place.id.toString()
+                        val checked = isPlaceCheckedIn(id)
                         if (distance[0] != 0f)
-                            addNearbyPlace(NearbyPlace(place.name!!, distance[0], id = id))
+                            addNearbyPlace(NearbyPlace(place.name!!, distance[0], id = id, checked = checked))
                     }
 
                     loading_card.visibility = View.GONE
