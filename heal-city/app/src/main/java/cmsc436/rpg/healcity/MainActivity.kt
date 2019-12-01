@@ -11,23 +11,24 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import androidx.fragment.app.Fragment
 import androidx.core.app.ActivityCompat
 import cmsc436.rpg.healcity.ui.map.MapFragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
+import android.content.Intent;
 
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var sharedPref: SharedPreferences
     lateinit var db: DBHelper
+    var context:Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // remove title bar and make screen full screen.
-        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         super.onCreate(savedInstanceState)
 
@@ -56,7 +57,12 @@ class MainActivity : AppCompatActivity() {
         setUpPermission()
 
         getPlayerInfo()
+
+        //var intent = Intent(context!!, WelcomeActivity::class.java)
+        //startActivity(intent)
+
     }
+
 
     private fun getPlayerInfo() {
         val (name, level) = User.getNameLevel(applicationContext)
@@ -97,6 +103,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
     companion object {
         const val TAG = "HEAL-CITY"
         const val PREF_FILE = "heal_city_pref"
@@ -108,7 +116,8 @@ class MainActivity : AppCompatActivity() {
 
         var missionTitles = arrayOf("Walking Goal", "Check-In Goal")
         var missionDesc = arrayOf("Walk 1 mile", "Check-In at 1 location")
-        var missionProg = intArrayOf(0, 0)
+        var missionProg = doubleArrayOf(0.0, 0.0)
+        var missionLength = intArrayOf(1, 1)
     }
 
 }

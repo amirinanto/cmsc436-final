@@ -7,14 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import cmsc436.rpg.healcity.R
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [IntroFragment3.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [IntroFragment3.newInstance] factory method to
- * create an instance of this fragment.
- */
 class IntroFragment3 : Fragment() {
 
 

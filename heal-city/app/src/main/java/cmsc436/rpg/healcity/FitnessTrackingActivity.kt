@@ -101,7 +101,7 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         } else {
             val steps = parseInt(steps_value.text.toString())
             if (steps > 0) {
-                result.putExtra(MainActivity.STEP_KEY, steps_value.text.toString().toInt())
+                result.putExtra(MainActivity.STEP_KEY, steps)
                 setResult(Activity.RESULT_OK, result)
 
                 var reward = kotlin.math.max(steps / 100, 1)

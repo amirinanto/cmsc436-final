@@ -9,10 +9,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_me.*
+
+import android.content.Intent;
+
 import android.util.Log
 import cmsc436.rpg.healcity.*
 import cmsc436.rpg.healcity.ui.adapters.AchievementsAdapter
 import org.jetbrains.anko.db.*
+
 
 
 class MeFragment : Fragment() {
