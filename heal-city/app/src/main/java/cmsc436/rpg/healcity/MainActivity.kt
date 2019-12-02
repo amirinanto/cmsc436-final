@@ -147,6 +147,7 @@ class MainActivity : AppCompatActivity() {
         var missionDesc = arrayListOf("Walk 1 mile", "Check-In at 1 location")
         var missionProg = arrayListOf(0.0, 0.0)
         var missionLength = arrayListOf(1, 1)
+        var checkedInNum = 0
     }
 
 }
