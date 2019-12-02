@@ -72,6 +72,7 @@ class MeFragment : Fragment() {
                     null, null, null, null, null, null)
                     .count
             }
+            
             places_visited_info.text = checkInCount.toString()
         }
     }
