@@ -24,12 +24,7 @@ class MissionFragment : Fragment() {
 
     private lateinit var mListView: ListView
     private lateinit var steps: Number
-    private lateinit var mTitles: ArrayList<String>
-    private lateinit var mDesc: ArrayList<String>
-    private lateinit var mProg: ArrayList<Double>
-    private lateinit var mLength: ArrayList<Int>
     private lateinit var simpleAdapter: SimpleAdapter
-    private var checkedInNum = 0
 
     private val from = arrayOf("listview_title", "listview_description", "listview_progress")
     private val to = intArrayOf(
@@ -48,15 +43,6 @@ class MissionFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_missions, container, false)
         val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
         val user = User.getPlayer(sharedPref)!!
-        if (user.checkIn > checkedInNum) updateCheckInMissions(user.checkIn)
-
-        Log.i("CHECK IN:", "${user.checkIn} $checkedInNum")
-
-
-        mTitles = MainActivity.missionTitles
-        mDesc = MainActivity.missionDesc
-        mProg = MainActivity.missionProg
-        mLength = MainActivity.missionLength
 
         // Adding and setting up add a new mission
         val addMissionButton = root.findViewById(R.id.AddNewMissionButton) as Button
@@ -71,11 +57,11 @@ class MissionFragment : Fragment() {
         }
 
         // Adding and setting up list view items
-        for (i in mTitles.indices) {
+        for (i in MainActivity.missionTitles.indices) {
             val hm = HashMap<String, String>()
-            hm["listview_title"] = mTitles[i]
-            hm["listview_description"] = mDesc[i]
-            hm["listview_progress"] = mProg[i].toString() + "/" + mLength[i].toString()
+            hm["listview_title"] = MainActivity.missionTitles[i]
+            hm["listview_description"] = MainActivity.missionDesc[i]
+            hm["listview_progress"] = MainActivity.missionProg[i].toString() + "/" + MainActivity.missionLength[i].toString()
             aList.add(hm)
         }
 
@@ -83,6 +69,10 @@ class MissionFragment : Fragment() {
 
         mListView = root.findViewById(R.id.mission_list)
         mListView.adapter = simpleAdapter
+
+        if (user.checkIn > MainActivity.checkedInNum) {
+            updateCheckInMissions(user.checkIn)
+        }
 
         return root
     }
@@ -166,10 +156,11 @@ class MissionFragment : Fragment() {
                         // If it is a walking goal, then update
                         if (MainActivity.missionProg[i] + distance >=  MainActivity.missionLength[i]) {
                             // Mission completed
-                            MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
                             val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
                             val user = User.getPlayer(sharedPref)!!
                             val reward = MainActivity.missionLength[i]*10
+
+                            MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
                             User.addExp(user, reward)
                             toRemove.add(i)
                             Toast.makeText(context!!, "You completed a mission for $reward exp!", Toast.LENGTH_SHORT).show()
@@ -196,25 +187,29 @@ class MissionFragment : Fragment() {
             MainActivity.missionLength.removeAt(i)
             MainActivity.missionProg.removeAt(i)
             simpleAdapter.notifyDataSetChanged()
+
         }
     }
 
     private fun updateCheckInMissions(userChecks: Int) {
         val toRemove = arrayListOf<Int>()
+
+        aList.clear()
         for (i in MainActivity.missionTitles.indices) {
             if (MainActivity.missionDesc[i].split(" ")[0] == "Check-In") {
-                if (MainActivity.missionProg[i] + userChecks-checkedInNum >= MainActivity.missionLength[i]) {
+                if ((MainActivity.missionProg[i] + (userChecks-MainActivity.checkedInNum)) >= MainActivity.missionLength[i].toFloat()) {
                     // Mission completed
-                    MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
                     val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
                     val user = User.getPlayer(sharedPref)!!
                     val reward = MainActivity.missionLength[i]*10
+
+                    MainActivity.missionProg[i] = MainActivity.missionLength[i]*1.0
                     User.addExp(user, reward)
                     toRemove.add(i)
                     Toast.makeText(context!!, "You completed a mission for $reward exp!", Toast.LENGTH_SHORT).show()
                 } else {
                     // Update current progress
-                    MainActivity.missionProg[i] += userChecks*1.0
+                    MainActivity.missionProg[i] += (userChecks-MainActivity.checkedInNum)*1.0
                     simpleAdapter.notifyDataSetChanged()
                 }
             }
@@ -225,8 +220,7 @@ class MissionFragment : Fragment() {
         ft?.detach(fragment)
         ft?.attach(fragment)
         ft?.commit()
-        checkedInNum = userChecks
-        // TODO: JUST NEED USER CHECK IN UPDATED IN USER CLASS
+        MainActivity.checkedInNum = userChecks
     }
 
     companion object {
