@@ -74,6 +74,19 @@ class DBHelper private constructor(context: Context): ManagedSQLiteOpenHelper(co
         onCreate(db)
     }
 
+    fun getTodayCheckIn(): Int {
+        var count = 0
+
+        use {
+            count = select(DBHelper.TABLE_CIN, DBHelper.COL_ID)
+                .whereSimple("(${DBHelper.COL_DATE}) = ?", User.date)
+                .parseList(StringParser)
+                .count()
+        }
+
+        return count
+    }
+
 }
 
 /**
