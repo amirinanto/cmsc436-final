@@ -19,7 +19,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cmsc436.rpg.healcity.*
 import cmsc436.rpg.healcity.R
 import com.google.android.gms.common.api.ApiException
@@ -95,7 +97,11 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             }
             listview_nearby.layoutManager = LinearLayoutManager(context!!)
             listview_nearby.adapter = adapter
-
+            listview_nearby.itemAnimator = object : DefaultItemAnimator() {
+                override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder): Boolean {
+                    return true
+                }
+            }
             Places.initialize(context!!, resources.getString(R.string.google_maps_key))
             placesClient = Places.createClient(context!!)
         }
@@ -132,10 +138,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     /**
      * TODO
      */
-    private fun checkIn(position: Int) {
-        val place = nearbyPlacesList[position]
+    private fun checkIn(place: NearbyPlace) {
 
-        if (place.distance > 20f) {
+        if (place.distance > 50f) {
             Toast.makeText(context!!, "Please move closer to ${place.name} and refresh the tab!", Toast.LENGTH_SHORT).show()
             return
         }
@@ -150,7 +155,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                 DBHelper.COL_ID to place.id,
                 DBHelper.COL_DATE to User.date)
             insert(DBHelper.TABLE_ACHIEVEMENT,
-                DBHelper.COL_DATE to "Checked In into ${place.name} for ${place.reward_exp} experience.",
+                DBHelper.COL_NAME to "Checked In into ${place.name} for ${place.reward_exp} experience.",
                 DBHelper.COL_DATE to User.date)
         }
 
@@ -158,6 +163,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         val player = User.getPlayer(sharedPref)!!
         player.checkIn++
         User.addExp(player, place.reward_exp, sharedPref)
+
+        place.checked = true
+        adapter.refresh()
     }
 
     private fun isPlaceCheckedIn(placeId: String): Boolean {
@@ -306,6 +314,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      * @author Muchlas Amirinanto
      */
     private fun populateNearby() {
+
+        loading_card.visibility = View.VISIBLE
+
         // Use fields to define the data types to return.
         var placeFields = listOf(Place.Field.NAME,
             Place.Field.ID,

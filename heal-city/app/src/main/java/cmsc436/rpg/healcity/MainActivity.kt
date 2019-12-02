@@ -58,11 +58,11 @@ class MainActivity : AppCompatActivity() {
         // initiate database
         db = DBHelper.getInstance(applicationContext)
 
-        Log.e(TAG, "first run ${sharedPref.getInt(FIRST_RUN_KEY, 10)}")
-
         if (User.isFirstRun(applicationContext)) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             return
+        } else {
+            setUpPermission()
         }
     }
 
@@ -78,17 +78,17 @@ class MainActivity : AppCompatActivity() {
                     ),
                     CREATE_CHARACTER_CODE
                 )
-            else
-                setUpPermission()
+            getPlayerInfo()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CREATE_CHARACTER_CODE) {
-            if (resultCode == Activity.RESULT_OK)
+            if (resultCode == Activity.RESULT_OK) {
                 getPlayerInfo()
-            else {
+                setUpPermission()
+            }else {
                 Toast.makeText(
                     applicationContext,
                     "This application will not work before you setup the character!",

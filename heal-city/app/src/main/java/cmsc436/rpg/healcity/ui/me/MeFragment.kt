@@ -37,6 +37,11 @@ class MeFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadPlayerInfo()
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -52,7 +57,6 @@ class MeFragment : Fragment() {
         achievement_list.layoutManager = LinearLayoutManager(context!!)
         achievement_list.adapter = adapter
 
-        loadPlayerInfo()
     }
 
     private fun loadPlayerInfo() {
