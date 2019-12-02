@@ -127,6 +127,7 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         }
 
         val player = User.getPlayer(sharedPref)!!
+        player.steps += steps
         User.addExp(player, reward)
         User.updatePlayer(sharedPref, player)
         return true

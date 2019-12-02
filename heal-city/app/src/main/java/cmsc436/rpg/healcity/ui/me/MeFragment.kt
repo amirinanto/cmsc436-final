@@ -72,6 +72,9 @@ class MeFragment : Fragment() {
                     null, null, null, null, null, null)
                     .count
             }
+            // Populating player statistics fields
+            step_total_info.text = player.steps.toString()
+            textView13.text = player.target.toString()
             places_visited_info.text = checkInCount.toString()
         }
     }
