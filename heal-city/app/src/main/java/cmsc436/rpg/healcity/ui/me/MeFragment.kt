@@ -10,9 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_me.*
 
-import android.content.Intent;
-
 import android.util.Log
+import android.widget.Toast
 import cmsc436.rpg.healcity.*
 import cmsc436.rpg.healcity.ui.adapters.AchievementsAdapter
 import org.jetbrains.anko.db.*
@@ -49,9 +48,8 @@ class MeFragment : Fragment() {
 //        loadDummyAchievements()
         loadAchievements()
 
-        adapter =
-            AchievementsAdapter(achievementList)
-        achievement_list.layoutManager = LinearLayoutManager(context)
+        adapter = AchievementsAdapter(achievementList)
+        achievement_list.layoutManager = LinearLayoutManager(context!!)
         achievement_list.adapter = adapter
 
         loadPlayerInfo()
@@ -59,9 +57,7 @@ class MeFragment : Fragment() {
 
     private fun loadPlayerInfo() {
         val player = User.getPlayer(sharedPref)
-        if (player == null) {
-
-        } else {
+        if (player != null) {
             val exp = player.exp
             exp_info.text = "${exp} / ${User.nextLevel(exp)}"
 
@@ -72,7 +68,9 @@ class MeFragment : Fragment() {
                     null, null, null, null, null, null)
                     .count
             }
-            
+
+            // Populating player statistics fields
+            target_step.text = player.target.toString()
             places_visited_info.text = checkInCount.toString()
         }
     }

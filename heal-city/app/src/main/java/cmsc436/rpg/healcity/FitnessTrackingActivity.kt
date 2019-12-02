@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_tracking.*
 import org.jetbrains.anko.db.insert
+import org.jetbrains.anko.share
 import org.jetbrains.anko.toast
 import java.lang.Integer.max
 import java.lang.Integer.parseInt
@@ -127,8 +128,8 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         }
 
         val player = User.getPlayer(sharedPref)!!
-        User.addExp(player, reward)
-        User.updatePlayer(sharedPref, player)
+        player.steps += steps
+        User.addExp(player, reward, sharedPref)
         return true
     }
 

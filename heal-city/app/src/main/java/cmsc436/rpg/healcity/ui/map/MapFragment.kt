@@ -157,9 +157,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
         val player = User.getPlayer(sharedPref)!!
         player.checkIn++
-        User.addExp(player, place.reward_exp)
-        User.updatePlayer(sharedPref, player)
-
+        User.addExp(player, place.reward_exp, sharedPref)
     }
 
     private fun isPlaceCheckedIn(placeId: String): Boolean {

@@ -18,12 +18,11 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateCharacterActivity"></activity>
-        <activity
-            android:name=".ui.login.CreatePlayerActivity"
-            android:label="@string/title_activity_create_player" />
-        <activity android:name=".TutorialFunctions" />
-        <activity android:name=".WelcomeActivity" />
+        <activity android:name=".ThirdSlide"></activity>
+        <activity android:name=".WelcomeActivity"/>
+        <activity android:name=".SecondSlide" />
+        <activity android:name=".FirstSlide" />
+        <activity android:name=".CreateCharacterActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -68,18 +68,19 @@ object User {
         }
     }
 
-    fun addExp(player: Player, reward: Int) {
+    fun addExp(player: Player, reward: Int, sharedPref: SharedPreferences) {
         with (player) {
             val nextLevel = level * LEVEL_EXP_REQ
             val exp = exp + reward
             if (exp >= nextLevel) {
                 level += 1
             }
+            updatePlayer(sharedPref, this)
         }
     }
 
     fun getNameLevel(context: Context): Pair<String, Int> {
-        var info = Pair<String, Int>("NO_NAME_SPECIFIED", -1)
+        var info = Pair("NO_NAME_SPECIFIED", -1)
         with(context.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)) {
             info = Pair(getString(PLAYER_NAME_KEY, "")!!, getInt(PLAYER_LEVEL_KEY, -1)!!)
         }
@@ -88,6 +89,21 @@ object User {
 
     fun nextLevel(exp: Int): Int
             = exp + (LEVEL_EXP_REQ - exp % LEVEL_EXP_REQ)
+
+    fun firstRunDone(context: Context) {
+        val sharedPref = context.getSharedPreferences(MainActivity.TAG, Context.MODE_PRIVATE)
+        with (sharedPref.edit()) {
+            putInt(MainActivity.FIRST_RUN_KEY, 0)
+            commit()
+        }
+    }
+
+    fun isFirstRun(context: Context): Boolean {
+        val sharedPref = context.getSharedPreferences(MainActivity.TAG, Context.MODE_PRIVATE)
+        if (sharedPref.contains(MainActivity.FIRST_RUN_KEY))
+            return false
+        return true
+    }
 
     val date: String
         get() =

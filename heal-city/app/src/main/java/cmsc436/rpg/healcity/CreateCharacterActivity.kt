@@ -11,6 +11,8 @@ import java.lang.Integer.parseInt
 
 class CreateCharacterActivity : AppCompatActivity() {
 
+    var exitDouble = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_character)
@@ -44,6 +46,11 @@ class CreateCharacterActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        Toast.makeText(this, "Please finish creating character!", Toast.LENGTH_SHORT).show()
+        if (exitDouble) {
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+        }
+        Toast.makeText(this, "You need to create character before using this app.", Toast.LENGTH_SHORT).show()
+        exitDouble = true
     }
 }

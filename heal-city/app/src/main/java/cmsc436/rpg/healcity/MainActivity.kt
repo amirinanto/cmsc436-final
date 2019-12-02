@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
 import android.content.Intent;
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
@@ -29,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var sharedPref: SharedPreferences
     lateinit var db: DBHelper
-    var context:Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,27 +58,44 @@ class MainActivity : AppCompatActivity() {
         // initiate database
         db = DBHelper.getInstance(applicationContext)
 
-        setUpPermission()
+        Log.e(TAG, "first run ${sharedPref.getInt(FIRST_RUN_KEY, 10)}")
 
-        if (User.getPlayer(sharedPref) == null)
-            startActivityForResult(Intent(applicationContext,
-                CreateCharacterActivity::class.java),
-                CREATE_CHARACTER_CODE)
-
-        getPlayerInfo()
-
-        val preferenceHelper = PreferenceHelper(applicationContext)
-        if (preferenceHelper.checkFirstLaunch()) {
-            var intent = Intent(applicationContext, WelcomeActivity::class.java)
-            startActivity(intent)
+        if (User.isFirstRun(applicationContext)) {
+            startActivity(Intent(this, WelcomeActivity::class.java))
+            return
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (!User.isFirstRun(applicationContext)) {
+            if (User.getPlayer(sharedPref) == null)
+                startActivityForResult(
+                    Intent(
+                        applicationContext,
+                        CreateCharacterActivity::class.java
+                    ),
+                    CREATE_CHARACTER_CODE
+                )
+            else
+                setUpPermission()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CREATE_CHARACTER_CODE && resultCode == Activity.RESULT_OK) {
-            getPlayerInfo()
+        if (requestCode == CREATE_CHARACTER_CODE) {
+            if (resultCode == Activity.RESULT_OK)
+                getPlayerInfo()
+            else {
+                Toast.makeText(
+                    applicationContext,
+                    "This application will not work before you setup the character!",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
+            }
         }
     }
 
@@ -132,12 +149,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val FIRST_RUN_KEY = "first_run"
         const val TAG = "HEAL-CITY"
         const val PREF_FILE = "heal_city_pref"
 
         const val STEP_KEY = "steps"
 
         const val CREATE_CHARACTER_CODE = 0
+        const val TUTORIAL_CODE = 1
 
 
 
@@ -147,6 +166,7 @@ class MainActivity : AppCompatActivity() {
         var missionDesc = arrayListOf("Walk 1 mile", "Check-In at 1 location")
         var missionProg = arrayListOf(0.0, 0.0)
         var missionLength = arrayListOf(1, 1)
+        var checkedInNum = 0
     }
 
 }

@@ -6,7 +6,7 @@
     android:background="@color/backgroundScreen">
 
     <LinearLayout
-        android:id="@+id/layoutOfDots"
+        android:id="@+id/bottomBarLayout"
         android:layout_width="412dp"
         android:layout_height="49dp"
         android:layout_alignParentStart="true"
@@ -21,16 +21,23 @@
         android:scrollbarAlwaysDrawHorizontalTrack="false"
         android:scrollbarAlwaysDrawVerticalTrack="false" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:background="#03A9F4">
 
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/missionPageDescription"
+        android:layout_width="349dp"
+        android:layout_height="128dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="62dp"
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/page_two_descrip"
+        android:textAlignment="center"
+        android:textColor="#F3EEEE"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <Button
 
@@ -43,43 +50,27 @@
         android:fontFamily="sans-serif"
         android:text="@string/tutorial_next_button"
         android:textColor="#F7FAF8"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        />
 
     <Button
+
         android:id="@+id/skip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:background="@null"
         android:text="@string/tutorial_skip_button"
         android:textColor="@android:color/white" />
 
-
     <ImageView
-        android:id="@+id/mePageImageView"
+        android:id="@+id/missionsPageImageView"
         android:layout_width="333dp"
         android:layout_height="578dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="112dp"
-        app:srcCompat="@drawable/me_page" />
-
-    <TextView
-
-        android:id="@+id/mePageDescription"
-        android:layout_width="283dp"
-        android:layout_height="120dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="68dp"
-        android:fontFamily="sans-serif-condensed"
-        android:text="@string/page_one_descrip"
-        android:textAlignment="center"
-        android:textColor="#F3EEEE"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        app:srcCompat="@drawable/missions_page" />
 
 </RelativeLayout>
