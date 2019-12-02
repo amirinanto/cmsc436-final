@@ -1,37 +1,30 @@
 package cmsc436.rpg.healcity
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.content.Intent
 
-
-//create the first or Home activity of our app
-
-class WelcomeActivity : AppCompatActivity() {
+class SecondSlide : AppCompatActivity() {
 
     private var skipButton: Button? = null
     private var nextButton: Button? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_welcome)
+        setContentView(R.layout.activity_second_slide)
 
         skipButton = findViewById(R.id.skip) as Button
         nextButton = findViewById(R.id.next) as Button
 
         skipButton!!.setOnClickListener(View.OnClickListener{
-            startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
+            startActivity(Intent(this@SecondSlide, MainActivity::class.java))
         })
-        nextButton!!.setOnClickListener {
-            startActivity(Intent(this@WelcomeActivity, FirstSlide::class.java))
-        }
 
+        nextButton!!.setOnClickListener(View.OnClickListener{
+            startActivity(Intent(this@SecondSlide, ThirdSlide::class.java))
+        })
     }
-
 }
-
-
-

@@ -18,12 +18,21 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateCharacterActivity"></activity>
+        <activity android:name=".ThirdSlide"></activity>
+        <activity android:name=".WelcomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".SecondSlide" />
+        <activity android:name=".FirstSlide" />
+        <activity android:name=".CreateCharacterActivity" />
         <activity
             android:name=".ui.login.CreatePlayerActivity"
             android:label="@string/title_activity_create_player" />
-        <activity android:name=".TutorialFunctions" />
-        <activity android:name=".WelcomeActivity" />
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -38,9 +47,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
