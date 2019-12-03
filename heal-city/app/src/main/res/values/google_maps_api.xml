@@ -20,5 +20,6 @@
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyC3-I8FY6pVEf5Acqc_Vn0bkzY-lKwbl3I</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">Adam Said TA going to put their own API Key here</string>
+    <!-- MY API KEY FROM COMMIT IS RESTRICTED DONT TRY TO USE THAT WITHOUT MY PERMISSION mamirina@terpmail.umd.edu -->
 </resources>
