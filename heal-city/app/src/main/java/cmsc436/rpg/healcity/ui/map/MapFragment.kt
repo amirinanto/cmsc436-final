@@ -41,17 +41,28 @@ import org.jetbrains.anko.db.*
 
 class MapFragment : Fragment(), OnMapReadyCallback{
 
+    // For the Google Map to sync with the app
     private lateinit var googleMap: SupportMapFragment
 
+    // To get user location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    // To get location updates
     private lateinit var locationCallback: LocationCallback
 
+    // Last known user location
     private var lastLocation: Location? = null
 
+    // To control the map behavior
     private lateinit var map: GoogleMap
+
+    // To access Places API
     private lateinit var placesClient: PlacesClient
 
+    // The list of nearby places
     private var nearbyPlacesList = ArrayList<NearbyPlace>()
+
+    // The adapter for nearby places list
     private lateinit var adapter: NearbyPlacesAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -73,6 +84,10 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        /*
+        Go to app setting on android system
+        only used when user deny app location permission
+        */
         setting_button.setOnClickListener {
             val intent = Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -82,19 +97,21 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         }
 
         if (!checkLocationPermission) {
-
+            // disable functions if location access is not provided
             noLocationProvided()
 
         }else {
-
             setupMap()
 
             nearbyPlacesList = ArrayList()
 
+            // setting up the adapter
             adapter = NearbyPlacesAdapter(nearbyPlacesList) {
                 checkIn(it)
                 adapter.refresh()
             }
+
+            // setting up the list
             listview_nearby.layoutManager = LinearLayoutManager(context!!)
             listview_nearby.adapter = adapter
             listview_nearby.itemAnimator = object : DefaultItemAnimator() {
@@ -102,13 +119,15 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                     return true
                 }
             }
+
+            // setting up Places API
             Places.initialize(context!!, resources.getString(R.string.google_maps_key))
             placesClient = Places.createClient(context!!)
         }
     }
 
     /**
-     *
+     * This variable refers to whether the app has the permission to access user's location
      *
      * @author Muchlas Amirinanto
      */
@@ -116,8 +135,13 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         get()
         = ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
+    /**
+     * This function will set the map and the location listener
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun setupMap() {
-        //map start thingy
+        // to synchronize map with app
         googleMap = childFragmentManager.findFragmentById(R.id.map_view) as SupportMapFragment
         googleMap.getMapAsync(this)
 
@@ -136,20 +160,28 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     }
 
     /**
-     * TODO
+     * Check in to a place in the list.
+     *
+     * This function will record the place
+     * into the database and update player's stat as necessary
+     *
+     * @author Muchlas Amirinanto
      */
     private fun checkIn(place: NearbyPlace) {
 
+        // place cannot be too far
         if (place.distance > 50f) {
             Toast.makeText(context!!, "Please move closer to ${place.name} and refresh the tab!", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // place cannot be checked into already
         if (isPlaceCheckedIn(place.id)) {
             Toast.makeText(context!!, "Already Checked In into ${place.name}!", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // save data into database
         context!!.database.use {
             insert(DBHelper.TABLE_CIN,
                 DBHelper.COL_ID to place.id,
@@ -159,25 +191,38 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                 DBHelper.COL_DATE to User.date)
         }
 
+        // update player stat
         val sharedPref = context!!.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
         val player = User.getPlayer(sharedPref)!!
         player.checkIn++
         User.addExp(player, place.reward_exp, sharedPref)
 
+        // update the list item
         place.checked = true
         adapter.refresh()
     }
 
+    /**
+     * This functino will check if a paticular place is checked in on the database already
+     *
+     *
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun isPlaceCheckedIn(placeId: String): Boolean {
         var exist = false
-        context!!.database.use {
+
+        // check on database
+        context?.database?.use {
             val count = select(DBHelper.TABLE_CIN, DBHelper.COL_ID)
                 .whereSimple("(${DBHelper.COL_ID}) = ?", placeId)
                 .parseList(StringParser)
                 .count()
+            // if place is recorded, then it is already checked into
             if (count > 0)
                 exist = true
         }
+
         return exist
     }
 
@@ -315,7 +360,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
      */
     private fun populateNearby() {
 
-        loading_card.visibility = View.VISIBLE
+        loading_card?.visibility = View.VISIBLE
 
         // Use fields to define the data types to return.
         var placeFields = listOf(Place.Field.NAME,
@@ -345,12 +390,12 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                             addNearbyPlace(NearbyPlace(place.name!!, distance[0], id = id, checked = checked))
                     }
 
-                    loading_card.visibility = View.GONE
+                    loading_card?.visibility = View.GONE
 
                     if (nearbyPlacesList.isEmpty()) {
                         noNearbyPlaces()
                     } else {
-                        nearby_list_card.visibility = View.VISIBLE
+                        nearby_list_card?.visibility = View.VISIBLE
                     }
 
                 }.addOnFailureListener {
@@ -388,10 +433,12 @@ class MapFragment : Fragment(), OnMapReadyCallback{
 
     companion object {
 
+        // to save user location into sharedPreference
         private const val LAT_KEY = "USER_LAT"
         private const val LNG_KEY = "USER_LNG"
         private const val TIME_KEY = "USER_TIME"
 
+        // default map zoom level
         private const val zoomLevel = 18.0f
     }
 }

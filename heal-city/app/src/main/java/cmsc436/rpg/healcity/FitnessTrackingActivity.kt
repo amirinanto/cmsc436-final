@@ -19,22 +19,26 @@ import org.jetbrains.anko.toast
 import java.lang.Integer.max
 import java.lang.Integer.parseInt
 
-
+/**
+ * This activity will handle the user walk tracking using Android's default sensor
+ *
+ * @author Muchlas Amirinanto
+ */
 class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(), SensorEventListener{
 
+    // if user really wants to exit
     var doubleBackPressed = false
-    var isTrackable = true
     var sensorManager: SensorManager? = null
     private var stepCounter = 0
-    private var counterSteps = 0
-    private var stepDetector = 0
 
-    // https://medium.com/@ssaurel/create-a-step-counter-fitness-app-for-android-with-kotlin-bbfb6ffe3ea7
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracking)
+
+        // sensor manager to manage the step sensor
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
+        // pause button can either be pause or resume
         pause_button.setOnClickListener {
             if (isRunning) { // pause pressed
                 stopTracking()
@@ -51,9 +55,6 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         stop_button.setOnClickListener {
             saveData()
         }
-
-//        Log.d(MainActivity.TAG, "step detector: ${true}" +
-//        ", step counter: ${packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)}")
     }
 
     override fun onResume() {
@@ -66,7 +67,11 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         stopTracking()
     }
 
-    // https://stackoverflow.com/questions/8430805/clicking-the-back-button-twice-to-exit-an-activity
+    /**
+     * This function override the default back button to make sure user did not exit on accident
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onBackPressed() {
         if (doubleBackPressed) {
             saveData()
@@ -78,6 +83,11 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         Handler().postDelayed({ doubleBackPressed = false }, 2000)
     }
 
+    /**
+     * This function will start user tracking and register step tracking sensor into the listener
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun startTracking() {
         isRunning = true
         var stepDetector = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
@@ -85,21 +95,35 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         if (stepDetector != null) {
             sensorManager?.registerListener(this, stepDetector, SensorManager.SENSOR_DELAY_UI)
         } else {
+            // cancel if no step sensor
             Toast.makeText(this, "No Step Counter Sensor!", Toast.LENGTH_SHORT).show()
             saveData(1)
         }
     }
 
+    /**
+     * This will stop the activity from tracking user's steps
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun stopTracking() {
         isRunning = false
         sensorManager?.unregisterListener(this)
     }
 
+    /**
+     * This function will finish the activity and save
+     * or discard the result based on the abort parameter
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun saveData(abort: Int = 0){
         val result = Intent()
         if (abort == 1) {
+            // discard everything
             setResult(Activity.RESULT_CANCELED)
         } else {
+            // save data
             val steps = parseInt(steps_value.text.toString())
             if (steps > 0) {
                 result.putExtra(MainActivity.STEP_KEY, steps)
@@ -109,11 +133,19 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
 
                 if (!addSteps(steps, reward))
                     toast("Player has not been initialized, please go to welcome screen.")
+            } else {
+                setResult(Activity.RESULT_CANCELED)
             }
         }
         finish()
     }
 
+    /**
+     * This function will record the number of steps into the database
+     * and update user's stat as necessary
+     *
+     * @author Muchlas Amirinanto
+     */
     private fun addSteps(steps: Int, reward: Int): Boolean {
         val sharedPref = applicationContext.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
         if (User.getPlayer(sharedPref) == null)
@@ -133,8 +165,14 @@ class FitnessTrackingActivity(var isRunning: Boolean = true): AppCompatActivity(
         return true
     }
 
+    // no need to do anything here
     override fun onAccuracyChanged(p0: Sensor, p1: Int) {}
 
+    /**
+     * Increment steps when a step is detected
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onSensorChanged(event: SensorEvent) {
         if (isRunning) {
             Log.i(MainActivity.TAG, "step detected: ${event.toString()}")

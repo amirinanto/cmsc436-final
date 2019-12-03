@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
+        // setting up tabs and fragments
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_me, R.id.navigation_mission, R.id.navigation_map
             )
         )
-
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -58,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         // initiate database
         db = DBHelper.getInstance(applicationContext)
 
+        // run the tutorial if app has not started before
         if (User.isFirstRun(applicationContext)) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             return
@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        // run the create player activity if user has not set up a character yet
         if (!User.isFirstRun(applicationContext)) {
             if (User.getPlayer(sharedPref) == null)
                 startActivityForResult(
@@ -78,12 +79,15 @@ class MainActivity : AppCompatActivity() {
                     ),
                     CREATE_CHARACTER_CODE
                 )
+            // load player informations
             getPlayerInfo()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        // user done setting up character
         if (requestCode == CREATE_CHARACTER_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 getPlayerInfo()
@@ -99,6 +103,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * This function will retrieve the name and level of character and load them into
+     * the top bar informatino
+     *
+     * @author Muchlas Amirinanto
+     */
     fun getPlayerInfo() {
         val (name, level) = User.getNameLevel(applicationContext)
         player_name_top.text = name
@@ -136,6 +146,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * As this is the main activity, we should really ask the user if they want to exit
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onBackPressed() {
         AlertDialog.Builder(this)
             .setTitle("Exit")
@@ -156,9 +171,6 @@ class MainActivity : AppCompatActivity() {
         const val STEP_KEY = "steps"
 
         const val CREATE_CHARACTER_CODE = 0
-        const val TUTORIAL_CODE = 1
-
-
 
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 

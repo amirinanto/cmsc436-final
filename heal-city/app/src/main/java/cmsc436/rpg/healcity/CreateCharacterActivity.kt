@@ -9,8 +9,14 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_create_character.*
 import java.lang.Integer.parseInt
 
+/**
+ * This class is the activity to initialize the player
+ *
+ * @author Muchlas Amirinanto
+ */
 class CreateCharacterActivity : AppCompatActivity() {
 
+    // if user really wants to exit
     var exitDouble = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +25,7 @@ class CreateCharacterActivity : AppCompatActivity() {
 
         val sharedPref = this.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE)
 
+        // if user already created then do nothing
         if (sharedPref.contains(User.PLAYER_NAME_KEY)) {
             finish()
             return
@@ -37,14 +44,21 @@ class CreateCharacterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // initialize user
             User.initPlayer(sharedPref,
                 name.toString(), parseInt(target.toString()))
 
+            // send back result
             setResult(Activity.RESULT_OK)
             finish()
         }
     }
 
+    /**
+     * This function override the default back button to make sure user did not exit on accident
+     *
+     * @author Muchlas Amirinanto
+     */
     override fun onBackPressed() {
         if (exitDouble) {
             setResult(Activity.RESULT_CANCELED)
