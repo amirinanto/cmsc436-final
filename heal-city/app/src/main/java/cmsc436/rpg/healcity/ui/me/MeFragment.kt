@@ -77,6 +77,8 @@ class MeFragment : Fragment() {
             target_step.text = player.target.toString()
             places_visited_info.text = checkInCount.toString()
         }
+
+        (activity as MainActivity).getPlayerInfo()
     }
 
     private fun loadAchievements() {

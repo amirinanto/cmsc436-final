@@ -73,8 +73,11 @@ object User {
             val nextLevel = level * LEVEL_EXP_REQ
             val exp = exp + reward
             if (exp >= nextLevel) {
-                level += 1
+                player.level += 1
             }
+
+            player.exp = exp
+
             updatePlayer(sharedPref, this)
         }
     }

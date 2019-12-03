@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPlayerInfo() {
+    fun getPlayerInfo() {
         val (name, level) = User.getNameLevel(applicationContext)
         player_name_top.text = name
         player_level_top.text = level.toString()
